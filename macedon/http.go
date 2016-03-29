@@ -16,6 +16,7 @@ type HttpServer struct {
 	deleter		*DeleteHandler
 	updater		*UpdateHandler
 	reader		*ReadHandler
+	notifyer	*NotifyHandler
 
 	log		*Log
 }
@@ -34,6 +35,8 @@ func InitHttpServer(addr string, log *Log) (*HttpServer, error) {
 	hs.updater.hs = hs
 	hs.reader  = &ReadHandler{}
 	hs.reader.hs = hs
+	hs.notifyer = &NotifyHandler{}
+	hs.notifyer.hs = hs
 
 	return hs, nil
 }
@@ -57,6 +60,7 @@ func (hs *HttpServer) AddRouter(location string) error {
 	http.Handle(location + DEFAULT_DELETE_LOCATION, hs.deleter)
 	http.Handle(location + DEFAULT_UPDATE_LOCATION, hs.updater)
 	http.Handle(location + DEFAULT_READ_LOCATION, hs.reader)
+	http.Handle(location + DEFAULT_NOTIFY_LOCATION, hs.notifyer)
 
 	return nil
 }

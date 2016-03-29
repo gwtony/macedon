@@ -13,6 +13,7 @@ const DEFAULT_CREATE_LOCATION	= "/create"
 const DEFAULT_DELETE_LOCATION	= "/delete"
 const DEFAULT_UPDATE_LOCATION	= "/update"
 const DEFAULT_READ_LOCATION		= "/read"
+const DEFAULT_NOTIFY_LOCATION	= "/notify"
 
 
 type Config struct {

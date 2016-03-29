@@ -17,6 +17,9 @@ type UpdateHandler struct {
 type ReadHandler struct {
 	hs *HttpServer
 }
+type NotifyHandler struct {
+	hs *HttpServer
+}
 
 func (h* CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		io.WriteString(w, "create\n")
@@ -29,4 +32,7 @@ func (h* UpdateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 func (h* ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		io.WriteString(w, "read\n")
+}
+func (h* NotifyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+		io.WriteString(w, "notify\n")
 }
