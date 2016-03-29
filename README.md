@@ -1,7 +1,7 @@
 # macedon-go
 Description
 ===========
-Macedon is a mysql api for powerdns
+Mysql api for powerdns
 * create a record
 * delete a record
 * update a record
