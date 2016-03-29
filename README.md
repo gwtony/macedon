@@ -31,6 +31,6 @@ read_location: /read
 Dependency
 ==========
 
-[log4go](http://code.google.com/p/log4go)
-[goconfig](https://github.com/msbranco/goconfig)
-[golang/x/ssh](http://golang.org/x/crypto/ssh)
+* [log4go](http://code.google.com/p/log4go)
+* [goconfig](https://github.com/msbranco/goconfig)
+* [golang/x/ssh](http://golang.org/x/crypto/ssh)
