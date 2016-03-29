@@ -2,10 +2,10 @@
 Description
 ===========
 Macedon is a mysql api for powerdns
-0. create a record
-0. delete a record
-0. update a record
-0. read a record
+* create a record
+* delete a record
+* update a record
+* read a record
 
 
 
