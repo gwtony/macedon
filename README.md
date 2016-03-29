@@ -22,10 +22,7 @@ dbpwd: data_password
 log: file to log
 level: debug
 
-create_location: /create
-delete_location: /delete
-update_location: /update
-read_location: /read
+location: /dns
 ```
 
 Dependency
