@@ -29,7 +29,7 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 	s.log.Debug("Init http server done")
 	//time.Sleep(time.Second * 5)
 
-	err = http.AddRouter(conf.create, conf.remove, conf.update, conf.read)
+	err = http.AddRouter(conf.location)
 	if err != nil {
 		s.log.Error("Server add router failed")
 		return nil, err

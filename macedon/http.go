@@ -7,19 +7,15 @@ import (
 )
 
 type HttpServer struct {
-	s		*Server
+	s			*Server
 
-	addr	string
+	addr		string
+	location	string
 
-	create	string
-	remove  string
-	update	string
-	read	string
-
-	creater	*CreateHandler
-	remover *RemoveHandler
-	updater *UpdateHandler
-	reader	*ReadHandler
+	creater		*CreateHandler
+	deleter		*DeleteHandler
+	updater		*UpdateHandler
+	reader		*ReadHandler
 
 	log		*Log
 }
@@ -32,8 +28,8 @@ func InitHttpServer(addr string, log *Log) (*HttpServer, error) {
 
 	hs.creater = &CreateHandler{}
 	hs.creater.hs = hs
-	hs.remover = &RemoveHandler{}
-	hs.remover.hs = hs
+	hs.deleter = &DeleteHandler{}
+	hs.deleter.hs = hs
 	hs.updater = &UpdateHandler{}
 	hs.updater.hs = hs
 	hs.reader  = &ReadHandler{}
@@ -52,16 +48,15 @@ func (hs *HttpServer) Run() error {
 	return s.ListenAndServe()
 }
 
-func (hs *HttpServer) AddRouter(create, remove, update, read string) error {
-	hs.log.Debug("Add router", create, remove, update, read)
-	time.Sleep(time.Second * 5)
-	http.Handle(create, hs.creater)
-	hs.log.Debug("Add router done")
-	time.Sleep(time.Second * 5)
+func (hs *HttpServer) AddRouter(location string) error {
+	hs.log.Debug("Add router", location)
 
-	http.Handle(remove, hs.remover)
-	http.Handle(update, hs.updater)
-	http.Handle(read, hs.reader)
+	hs.location = location
+
+	http.Handle(location + DEFAULT_CREATE_LOCATION, hs.creater)
+	http.Handle(location + DEFAULT_DELETE_LOCATION, hs.deleter)
+	http.Handle(location + DEFAULT_UPDATE_LOCATION, hs.updater)
+	http.Handle(location + DEFAULT_READ_LOCATION, hs.reader)
 
 	return nil
 }

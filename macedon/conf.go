@@ -9,22 +9,25 @@ import (
 const DEFAULT_CONF_PATH		= "../conf"
 const DEFAULT_CONF			= "macedon.conf"
 
+const DEFAULT_CREATE_LOCATION	= "/create"
+const DEFAULT_DELETE_LOCATION	= "/delete"
+const DEFAULT_UPDATE_LOCATION	= "/update"
+const DEFAULT_READ_LOCATION		= "/read"
+
+
 type Config struct {
-	addr	string  /* server bind address */
+	addr		string  /* server bind address */
 
-	create	string	/* create location */
-	remove	string	/* remove location */
-	update	string  /* update location */
-	read	string	/* read location */
+	location	string	/* handler location */
 
-	maddr	string	/* mysql addr */
+	maddr		string	/* mysql addr */
 
-	dbname	string	/* db name */
-	dbuser	string	/* db username */
-	dbpwd	string	/* db password */
+	dbname		string	/* db name */
+	dbuser		string	/* db username */
+	dbpwd		string	/* db password */
 
-	log		string	/* log file */
-	level	string	/* log level */
+	log			string	/* log file */
+	level		string	/* log level */
 }
 
 func (conf *Config) ReadConf(file string) (*Config, error) {
@@ -39,10 +42,7 @@ func (conf *Config) ReadConf(file string) (*Config, error) {
 
 	//TODO: check
 	conf.addr, _		= c.GetString("default", "addr")
-	conf.create, _		= c.GetString("default", "create_location")
-	conf.remove, _		= c.GetString("default", "delete_location")
-	conf.update, _		= c.GetString("default", "update_location")
-	conf.read, _		= c.GetString("default", "read_location")
+	conf.location, _		= c.GetString("default", "location")
 
 	conf.log, _			= c.GetString("default", "log")
 	conf.level, _		= c.GetString("default", "level")
