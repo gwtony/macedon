@@ -27,7 +27,7 @@ location: /dns
 
 Schema
 =====
-* [schema](SCHEMA.md)
+* [schema infomation](SCHEMA.md)
 
 Dependency
 ==========
