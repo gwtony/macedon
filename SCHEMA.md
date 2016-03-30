@@ -257,6 +257,47 @@ HTTP/1.1 200 OK
 	}
 }
 ```
+
+Notify Zone
+----------
+
+```
+Request
+POST /macedon/notify HTTP/1.1 
+Content-Type: application/json
+{
+	"name": ${name},  //zone name
+}
+
+Response
+HTTP/1.1 200 OK 
+{
+	"result": {
+		"affected": ${affected objects number} 
+	}
+}
+ 
+Response record not found
+Response
+HTTP/1.1 204 No Content 
+
+[Example]
+
+POST /macedon/notify HTTP/1.1 
+Content-Type: application/json
+{
+	"name": "example.com"
+}
+
+Response
+HTTP/1.1 200 OK 
+{
+	"result": {
+		"affected": 1 
+	}
+}
+```
+
 Status Code 
 -----------
 
