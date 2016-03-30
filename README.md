@@ -25,6 +25,10 @@ level: debug
 location: /dns
 ```
 
+Schema
+=====
+* [schema](SCHEMA.md)
+
 Dependency
 ==========
 
