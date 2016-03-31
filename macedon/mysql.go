@@ -113,18 +113,18 @@ func (mc *MysqlContext) QueryRead(name, type_s string) (*Response, error) {
 	}
 
 	rows, err := db.Query(query)
-    if err != nil {
-        mc.log.Error("Execute read query (%s) failed", query)
+	if err != nil {
+		mc.log.Error("Execute read query (%s) failed", query)
 		return nil, err
-    }
+	}
 	defer rows.Close()
 
-    for rows.Next() {
-        err := rows.Scan(&domain_id, &content, &ttl, &disabled)
-        if err != nil {
-            mc.log.Error("Scan read answer failed")
+	for rows.Next() {
+		err := rows.Scan(&domain_id, &content, &ttl, &disabled)
+		if err != nil {
+			mc.log.Error("Scan read answer failed")
 			//TODO: break or not
-        }
+		}
 		if flag == 0 {
 			ret.Result.Affected = 1
 			ret.Result.Data.Domain_id = domain_id
@@ -138,7 +138,6 @@ func (mc *MysqlContext) QueryRead(name, type_s string) (*Response, error) {
 		rec.Content = content
 		rec.Disabled = disabled
 		ret.Result.Data.Records = append(ret.Result.Data.Records, *rec)
-
     }
 
 	err = rows.Err()

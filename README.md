@@ -6,6 +6,7 @@ Mysql api for powerdns
 * delete a record
 * update a record
 * read a record
+* notify zone update
 
 
 
@@ -13,16 +14,23 @@ Config Sample
 =============
 
 ```
-addr: host:port
-maddr: mysql_host:port
-dbname: database_name
-dbuser: database_user
-dbpwd: data_password
+[default]
+addr: host:ip
+mysql_addr: mysql_host:3306
+mysql_dbname: dbname
+mysql_dbuser: dbuser
+mysql_dbpwd: dbpwd
 
-log: file to log
+log: macedon.log
 level: debug
 
 location: /dns
+purge_ips: "192,168.0.1"
+purge_cmd: "purge dns"
+ssh_key: /username/.ssh/id_rsa
+ssh_port: 22
+ssh_user: username
+ssh_timeout: 20
 ```
 
 Schema
