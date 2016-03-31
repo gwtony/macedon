@@ -8,12 +8,12 @@ import (
 )
 
 type MysqlContext struct {
-	addr	string
-	dbname	string
-	dbuser	string
-	dbpwd	string
+	addr    string
+	dbname  string
+	dbuser  string
+	dbpwd   string
 
-	log		*Log
+	log     *Log
 }
 
 const DNS_CREATE_SQL "insert into records (name, type, domain_id, ttl, content) values ('%s', '%s', %d, %d, '%s');"
@@ -26,11 +26,11 @@ const DNS_READ_SQL "select domain_id, name, type, content, ttl, disabled from re
 func InitMysqlContext(addr, dbname, dbuser, dbpwd string, log *Log) (*MysqlContext, error) {
 	mc := &MysqlContext{}
 
-	mc.addr		= addr
-	mc.dbname	= dbname
-	mc.dbuser	= dbuser
-	mc.dbpwd	= dbpwd
-	mc.log		= log
+	mc.addr     = addr
+	mc.dbname   = dbname
+	mc.dbuser   = dbuser
+	mc.dbpwd    = dbpwd
+	mc.log      = log
 
 	return mc, nil
 }

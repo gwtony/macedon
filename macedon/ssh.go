@@ -15,10 +15,10 @@ var DefaultTimeout = 5 * time.Second
 var DefaultScpCmd = "/usr/bin/scp -qrt "
 
 type SshContext struct {
-	user		string
-	key			string
-	timeout		time.Duration
-	config		*ssh.ClientConfig
+	user    string
+	key     string
+	timeout	time.Duration
+	config	*ssh.ClientConfig
 }
 
 type SshClient struct {
@@ -26,10 +26,10 @@ type SshClient struct {
 }
 
 type SshConn struct {
-	addr	string
-	client	*ssh.Client
-	lock	sync.Mutex
-	conn	*net.Conn
+	addr    string
+	client  *ssh.Client
+	lock    sync.Mutex
+	conn    *net.Conn
 }
 
 func InitSshContext(file string, user string, timeout time.Duration, log *Log) (*SshContext, error) {

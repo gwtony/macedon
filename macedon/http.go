@@ -7,18 +7,18 @@ import (
 )
 
 type HttpServer struct {
-	s			*Server
+	s           *Server
 
-	addr		string
-	location	string
+	addr        string
+	location    string
 
-	creater		*CreateHandler
-	deleter		*DeleteHandler
-	updater		*UpdateHandler
-	reader		*ReadHandler
-	notifyer	*NotifyHandler
+	creater     *CreateHandler
+	deleter     *DeleteHandler
+	updater     *UpdateHandler
+	reader      *ReadHandler
+	notifyer    *NotifyHandler
 
-	log		*Log
+	log         *Log
 }
 
 func InitHttpServer(addr string, log *Log) (*HttpServer, error) {
@@ -52,7 +52,7 @@ func InitHttpServer(addr string, log *Log) (*HttpServer, error) {
 
 func (hs *HttpServer) Run() error {
 	s := &http.Server{
-		Addr:			hs.addr,
+		Addr:           hs.addr,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 	}

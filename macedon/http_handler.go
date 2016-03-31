@@ -7,23 +7,23 @@ import (
 )
 
 type CreateHandler struct {
-	hs	*HttpServer
+	hs  *HttpServer
 	log *Log
 }
 type DeleteHandler struct {
-	hs	*HttpServer
+	hs  *HttpServer
 	log *Log
 }
 type UpdateHandler struct {
-	hs	*HttpServer
+	hs  *HttpServer
 	log *Log
 }
 type ReadHandler struct {
-	hs	*HttpServer
+	hs  *HttpServer
 	log *Log
 }
 type NotifyHandler struct {
-	hs	*HttpServer
+	hs  *HttpServer
 	log *Log
 }
 

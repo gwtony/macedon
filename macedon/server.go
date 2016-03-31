@@ -6,15 +6,15 @@ import (
 )
 
 type Server struct {
-	addr	string
+	addr    string
 
-	hs		*HttpServer
+	hs      *HttpServer
 
-	pc		*PurgeContext
-	mc		*MysqlContext
-	sc		*SshContext
+	pc      *PurgeContext
+	mc      *MysqlContext
+	sc      *SshContext
 
-	log		*Log
+	log     *Log
 }
 
 func InitServer(conf *Config, log *Log) (*Server, error) {
