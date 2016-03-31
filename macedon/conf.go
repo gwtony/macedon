@@ -21,23 +21,23 @@ const DEFAULT_SSH_TIMEOUT       = 5
 type Config struct {
 	addr       string  /* server bind address */
 
-	location   string	/* handler location */
+	location   string  /* handler location */
 
-	maddr      string	/* mysql addr */
-	dbname     string	/* db name */
-	dbuser     string	/* db username */
-	dbpwd      string	/* db password */
+	maddr      string  /* mysql addr */
+	dbname     string  /* db name */
+	dbuser     string  /* db username */
+	dbpwd      string  /* db password */
 
 	sport      string  /* ssh port */
 	suser      string  /* ssh user */
 	skey       string  /* ssh key */
 	sto        int64   /* ssh timeout */
 
-	ips        string	/* ip to purge */
-	cmd        string	/* purge command */
+	ips        string  /* ip to purge */
+	cmd        string  /* purge command */
 
-	log        string	/* log file */
-	level      string	/* log level */
+	log        string  /* log file */
+	level      string  /* log level */
 }
 
 func (conf *Config) ReadConf(file string) (*Config, error) {
