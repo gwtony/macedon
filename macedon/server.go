@@ -1,14 +1,19 @@
 package macedon
 
 import (
-	//"time"
+	"time"
 	//"strings"
 )
 
 type Server struct {
 	addr	string
-	mysql	*MysqlClient
-	http	*HttpServer
+
+	hs		*HttpServer
+
+	pc		*PurgeContext
+	mc		*MysqlContext
+	sc		*SshContext
+
 	log		*Log
 }
 
@@ -18,38 +23,62 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 	s.log = log
 	s.addr = conf.addr
 
-	http, err := InitHttpServer(conf.addr, s.log)
+	hs, err := InitHttpServer(conf.addr, s.log)
 	if err != nil {
 		s.log.Error("Init http server failed")
 		return nil, err
 	}
-	s.http = http
-	http.s = s
+	s.hs = hs
+	hs.s = s
 
 	s.log.Debug("Init http server done")
-	//time.Sleep(time.Second * 5)
 
-	err = http.AddRouter(conf.location)
+	err = hs.AddRouter(conf.location)
 	if err != nil {
 		s.log.Error("Server add router failed")
 		return nil, err
 	}
 
-	mysql, err := InitMysqlClient(conf.maddr, conf.dbname, conf.dbuser, conf.dbpwd, s.log)
+	mc, err := InitMysqlContext(conf.maddr, conf.dbname, conf.dbuser, conf.dbpwd, s.log)
 	if err != nil {
 		s.log.Error("Init mysql client faild")
 		return nil, err
 	}
+	s.mc = mc
 
-	mysql.s = s
-	s.mysql = mysql
+	pc, err := InitPurgeContext(conf.ips, conf.sport, conf.cmd, s.log)
+	if err != nil {
+		s.log.Error("Init purge context failed")
+	}
+	s.pc = pc
+
+	sc, err := InitSshContext(conf.skey, conf.suser, time.Duration(conf.sto), s.log)
+	if err != nil {
+		s.log.Error("Init ssh context failed")
+		return nil, err
+	}
+	s.sc = sc
 
 	return s, nil
 }
 
+func (s *Server) MysqlContext() (*MysqlContext) {
+	return s.mc
+}
+
+func (s *Server) HttpServer() (*HttpServer) {
+	return s.hs
+}
+
+func (s *Server) PurgeContext() (*PurgeContext) {
+	return s.pc
+}
+func (s *Server) SshContext() (*SshContext) {
+	return s.sc
+}
 
 func (s *Server) Run() error {
-	err := s.http.Run()
+	err := s.hs.Run()
 	if err != nil {
 		s.log.Error("Server run failed")
 	}

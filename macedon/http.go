@@ -29,14 +29,23 @@ func InitHttpServer(addr string, log *Log) (*HttpServer, error) {
 
 	hs.creater = &CreateHandler{}
 	hs.creater.hs = hs
+	hs.creater.log = log
+
 	hs.deleter = &DeleteHandler{}
 	hs.deleter.hs = hs
+	hs.deleter.log = log
+
 	hs.updater = &UpdateHandler{}
 	hs.updater.hs = hs
+	hs.updater.log = log
+
 	hs.reader  = &ReadHandler{}
 	hs.reader.hs = hs
+	hs.reader.log = log
+
 	hs.notifyer = &NotifyHandler{}
 	hs.notifyer.hs = hs
+	hs.notifyer.log = log
 
 	return hs, nil
 }
@@ -54,6 +63,7 @@ func (hs *HttpServer) Run() error {
 func (hs *HttpServer) AddRouter(location string) error {
 	hs.log.Debug("Add router", location)
 
+	//TODO: deal invalid location
 	hs.location = location
 
 	http.Handle(location + DEFAULT_CREATE_LOCATION, hs.creater)
@@ -63,4 +73,8 @@ func (hs *HttpServer) AddRouter(location string) error {
 	http.Handle(location + DEFAULT_NOTIFY_LOCATION, hs.notifyer)
 
 	return nil
+}
+
+func (hs *HttpServer) Server() (*Server) {
+	return hs.s
 }

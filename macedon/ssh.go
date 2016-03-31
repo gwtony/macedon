@@ -32,12 +32,12 @@ type SshConn struct {
 	conn	*net.Conn
 }
 
-func InitSshContext(path string, user string, timeout time.Duration, log *Log) (*SshContext, error) {
+func InitSshContext(file string, user string, timeout time.Duration, log *Log) (*SshContext, error) {
 	sc := &SshContext{}
 
-	key, err := ioutil.ReadFile(path)
+	key, err := ioutil.ReadFile(file)
 	if err != nil {
-		log.Error("Read private key from %s failed", path)
+		log.Error("Read private key from %s failed", file)
 		return nil, err
 	}
 	sc.key = string(key)

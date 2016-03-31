@@ -2,14 +2,21 @@ package macedon
 
 import (
 	"fmt"
+	"time"
 )
 
 func Run() {
     cconf := new(Config)
-    conf, _:= cconf.ReadConf("../conf/macedon.conf")
+    conf, err:= cconf.ReadConf("")
+    //conf, _:= cconf.ReadConf("../conf/macedon.conf")
+	if err != nil {
+		fmt.Println(err)
+		time.Sleep(time.Second)
+		return
+	}
 
 	if conf == nil {
-        fmt.Println("no conf")
+        fmt.Println("No conf")
         return
     }
 
@@ -17,7 +24,8 @@ func Run() {
 
     server, err := InitServer(conf, log)
     if err != nil {
-        log.Error("init server failed")
+        log.Error("Init server failed")
+		time.Sleep(time.Second)
         return
     }
 

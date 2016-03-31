@@ -35,3 +35,4 @@ Dependency
 * [log4go](http://code.google.com/p/log4go)
 * [goconfig](https://github.com/msbranco/goconfig)
 * [golang/x/ssh](http://golang.org/x/crypto/ssh)
+* [go-sql-driver/mysql](http://github.com/go-sql-driver/mysql)
