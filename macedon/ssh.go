@@ -19,6 +19,7 @@ type SshContext struct {
 	key     string
 	timeout	time.Duration
 	config	*ssh.ClientConfig
+	log     *Log
 }
 
 type SshClient struct {
@@ -34,6 +35,8 @@ type SshConn struct {
 
 func InitSshContext(file string, user string, timeout time.Duration, log *Log) (*SshContext, error) {
 	sc := &SshContext{}
+
+	sc.log = log
 
 	key, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -61,12 +64,12 @@ func InitSshContext(file string, user string, timeout time.Duration, log *Log) (
 	return sc, nil
 }
 
-func (sc *SshContext) InitSshConn(addr string, log *Log) (*SshConn, error) {
+func (sc *SshContext) InitSshConn(addr string) (*SshConn, error) {
 	sconn := &SshConn{}
 	sconn.addr = addr
-	err := sconn.SshConnect(sc, addr, log)
+	err := sconn.SshConnect(sc, addr, sc.log)
 	if err != nil {
-		log.Error("Init ssh connection to %s failed", addr)
+		sc.log.Error("Init ssh connection to %s failed", addr)
 		return nil, err
 	}
 

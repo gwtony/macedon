@@ -2,7 +2,7 @@ package macedon
 
 import (
 	"io"
-	"fmt"
+	//"fmt"
 	"net/http"
 )
 
@@ -28,11 +28,11 @@ type NotifyHandler struct {
 }
 
 func (h* CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	mc := h.hs.Server().MysqlContext()
-	pc := h.hs.Server().PurgeContext()
-	sc := h.hs.Server().SshContext()
-	fmt.Println(mc, pc, sc)
-	pc.DoPurge(sc)
+	//mc := h.hs.Server().MysqlContext()
+	//pc := h.hs.Server().PurgeContext()
+	//sc := h.hs.Server().SshContext()
+	//fmt.Println(mc, pc, sc)
+	//pc.DoPurge(sc)
 
 	io.WriteString(w, "create\n")
 }
@@ -43,6 +43,9 @@ func (h* UpdateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "update\n")
 }
 func (h* ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	mc := h.hs.Server().MysqlContext()
+	mc.QueryRead("test.example.org", "A")
+
 	io.WriteString(w, "read\n")
 }
 func (h* NotifyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
