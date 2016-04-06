@@ -16,8 +16,6 @@ Content-Type: application/json
 	"ttl": ${TTL},                   //TTL
 	"records": [
 		{ "content" : ${content} }   //domain name or ip
-		{ ... },
-		{ ... }
 	]
 }
 
@@ -39,7 +37,6 @@ Content-Type: application/json
 	"domain_id": 1,
 	"ttl": 30,
 	"records": [ 
-		{ "content" : "192.168.0.1" },
 		{ "content" : "192.168.0.2" }           
 	]
 }
@@ -89,8 +86,7 @@ Content-Type: application/json
 	"name": ${name},      //${name} may be a domain name or ip or ptr-ip
 	"type": ${type},      //${type} must be "A" or "CNAME" or "PTR"
 	"records": [          //"records" is optional
-		{ "content": { ... } },
-		{ ... }
+		{ "content": { ... } }
 	]  
 }
 Response
@@ -131,28 +127,16 @@ Content-Type: application/json
 		{
 			"content": ${ip},
 			"disabled": ${disabled}    //${disabled} is 1 or 0
-		},
-		{ ... }
+		}
 	]
 }
 
 
-Response will return the old record
 Response
 HTTP/1.1 200 OK
 {
 	"result": {
 		"affected": ${affected objects number},
-		"data": {
-			"name": ${name},
-			"type": "A",
-			"records": [
-				{
-					"content": ${ip},
-					"disabled": ${disabled_old}  //old disabled state
-				}
-			]
-		}
 	}
 }
 
@@ -179,16 +163,6 @@ Successful Response
 HTTP/1.1 200 OK
 {   "result": {
 		"affected": 1, 
-		"data": [{
-			"name": "test.example.com",
-			"type": "A",
-			"records": [
-				{
-				"content": "192.168.0.1",
-				"disabled": 0
-				}
-			]
-		}]
 	}
 }
 ```

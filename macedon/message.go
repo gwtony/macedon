@@ -21,5 +21,5 @@ type ResponseResult struct {
 }
 
 type Response struct {
-	Result  ResponseResult
+	Result	ResponseResult
 }
