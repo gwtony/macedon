@@ -121,6 +121,8 @@ func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	var resp *Response
+
 	if req.Method != "POST" {
 		h.log.Error("Method invalid: ", req.Method)
 		http.Error(w, "Method invalid", http.StatusBadRequest)
@@ -168,9 +170,9 @@ func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	if len(data.Records) > 0 {
 		rec :=  data.Records[0]
-		resp, err := mc.QueryDelete(db, data.Name, data.Type, rec.Content)
+		resp, err = mc.QueryDelete(db, data.Name, data.Type, rec.Content)
 	} else {
-		resp, err := mc.QueryDelete(db, data.Name, data.Type)
+		resp, err = mc.QueryDelete(db, data.Name, data.Type, "")
 	}
 
 	returnResponse(w, req, resp, err, h.log)
