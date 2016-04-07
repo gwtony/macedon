@@ -25,7 +25,7 @@ log: macedon.log
 level: debug
 
 location: /dns
-purge_ips: "192,168.0.1"
+purge_ips: "192.168.0.1"
 purge_cmd: "purge dns"
 ssh_key: /username/.ssh/id_rsa
 ssh_port: 22

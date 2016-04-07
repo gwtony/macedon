@@ -6,9 +6,9 @@ import (
 )
 
 func Run() {
-    cconf := new(Config)
-    conf, err:= cconf.ReadConf("")
-    //conf, _:= cconf.ReadConf("../conf/macedon.conf")
+	cconf := new(Config)
+	conf, err:= cconf.ReadConf("")
+	//conf, _:= cconf.ReadConf("../conf/macedon.conf")
 	if err != nil {
 		fmt.Println(err)
 		time.Sleep(time.Second)

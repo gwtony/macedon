@@ -97,7 +97,7 @@ func (mc *MysqlContext) QueryRead(db *sql.DB, name, type_s string) (*Response, e
 		rec.Content = content
 		rec.Disabled = disabled
 		ret.Result.Data.Records = append(ret.Result.Data.Records, *rec)
-    }
+	}
 
 	if flag == 0 {
 		mc.log.Error("Scan no answer")
