@@ -46,18 +46,23 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 	}
 	s.mc = mc
 
-	pc, err := InitPurgeContext(conf.ips, conf.sport, conf.cmd, s.log)
-	if err != nil {
-		s.log.Error("Init purge context failed")
-	}
-	s.pc = pc
+	if conf.purgable == 1 {
+		pc, err := InitPurgeContext(conf.ips, conf.sport, conf.cmd, s.log)
+		if err != nil {
+			s.log.Error("Init purge context failed")
+		}
+		s.pc = pc
 
-	sc, err := InitSshContext(conf.skey, conf.suser, time.Duration(conf.sto), s.log)
-	if err != nil {
-		s.log.Error("Init ssh context failed")
-		return nil, err
+		sc, err := InitSshContext(conf.skey, conf.suser, time.Duration(conf.sto) * time.Second, s.log)
+		if err != nil {
+			s.log.Error("Init ssh context failed")
+			return nil, err
+		}
+		s.sc = sc
+	} else {
+		s.pc = nil
+		s.sc = nil
 	}
-	s.sc = sc
 
 	return s, nil
 }

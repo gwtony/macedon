@@ -21,7 +21,8 @@ const DNS_CREATE_SQL          = "insert into records (name, type, domain_id, ttl
 const DNS_DELETE_SQL          = "delete from records where name = ? and type = ?"
 const DNS_DELETE_SQL_CONTENT  = "delete from records where name = ? and type = ? and content = ?"
 const DNS_UPDATE_SQL          = "update records set disabled = ? where name = ? and type = ? and content = ?"
-const DNS_READ_SQL            = "select domain_id, content, ttl, disabled from records where name = ? AND type = ?;"
+const DNS_READ_SQL            = "select domain_id, content, ttl, disabled from records where name = ? AND type = ?"
+const DNS_NOTIFY_SQL          = "update domains set notified_serial = notified_serial + 1 where name = ?"
 
 
 func InitMysqlContext(addr, dbname, dbuser, dbpwd string, log *Log) (*MysqlContext, error) {
@@ -63,8 +64,12 @@ func (mc *MysqlContext) QueryRead(db *sql.DB, name, type_s string) (*Response, e
 
 	rows, err := db.Query(DNS_READ_SQL, name, type_s)
 	if err != nil {
-		mc.log.Error("Execute read (name: %s, type: %s) failed", name, type_s)
-		return nil, err
+		if err == sql.ErrNoRows {
+			mc.log.Error("Scan no answer")
+			return nil, NoContentError
+		}
+		mc.log.Error("Execute read (name: %s, type: %s) failed: ", name, type_s, err)
+		return nil, BadGatewayError
 	}
 	defer rows.Close()
 
@@ -168,3 +173,27 @@ func (mc *MysqlContext) QueryUpdate(db *sql.DB, name, type_s, content string, di
 	return mc.QueryWrite(db, DNS_UPDATE_SQL, disabled, name, type_s, content)
 }
 
+func (mc *MysqlContext ) QueryNotify(db *sql.DB, name string) (*Response, error) {
+	if name == "" {
+		mc.log.Error("Read sql arguments invalid")
+		return nil, BadRequestError
+	}
+
+	ret := &Response{}
+
+	res, err := db.Exec(DNS_NOTIFY_SQL, name)
+
+	if err != nil {
+		mc.log.Error("Execute notify sql: ", DNS_NOTIFY_SQL, name, " failed: ", err)
+		return nil, BadGatewayError
+	}
+	affected, err := res.RowsAffected()
+	if err != nil {
+		mc.log.Error("Get rows affected failed")
+		return nil, InternalServerError
+	}
+
+	ret.Result.Affected = int(affected)
+
+	return ret, nil
+}

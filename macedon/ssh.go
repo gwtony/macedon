@@ -77,9 +77,10 @@ func (sc *SshContext) InitSshConn(addr string) (*SshConn, error) {
 }
 
 func (sconn *SshConn) SshConnect(sc *SshContext, addr string, log *Log) error {
+	log.Debug("timeout is %d", sc.timeout)
 	conn, err := net.DialTimeout("tcp", addr, sc.timeout)
 	if err != nil {
-		log.Error("Create ssh connection to %s failed", addr)
+		log.Error("Create ssh connection to %s failed:", addr, err)
 		return err
 	}
 

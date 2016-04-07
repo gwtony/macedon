@@ -31,7 +31,8 @@ func InitPurgeContext(ips string, port string, cmd string, log *Log) (*PurgeCont
 	return pc, nil
 }
 
-func (pc *PurgeContext) DoPurge(sc *SshContext) (error){
+/* Do not return any error */
+func (pc *PurgeContext) DoPurge(sc *SshContext) error {
 	pc.log.Debug("Do purge")
 
 	ch := make(chan int, pc.iplen)

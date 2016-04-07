@@ -1,9 +1,11 @@
 package macedon
 
 import (
-	goconf "github.com/msbranco/goconfig"
-	"path/filepath"
+	"os"
+	"fmt"
 	//"time"
+	"path/filepath"
+	goconf "github.com/msbranco/goconfig"
 )
 
 const DEFAULT_CONF_PATH         = "../conf"
@@ -35,6 +37,7 @@ type Config struct {
 
 	ips        string  /* ip to purge */
 	cmd        string  /* purge command */
+	purgable   int     /* do purge or not */
 
 	log        string  /* log file */
 	level      string  /* log level */
@@ -47,31 +50,86 @@ func (conf *Config) ReadConf(file string) (*Config, error) {
 
 	c, err := goconf.ReadConfigFile(file)
 	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Error] Read conf file %s failed", file)
 		return nil, err
 	}
 
 	//TODO: check
-	conf.addr, _        = c.GetString("default", "addr")
-	conf.location, _    = c.GetString("default", "location")
-
-	conf.log, _         = c.GetString("default", "log")
-	conf.level, _       = c.GetString("default", "level")
-
-	conf.maddr, _       = c.GetString("default", "mysql_addr")
-	conf.dbname, _      = c.GetString("default", "mysql_dbname")
-	conf.dbuser, _      = c.GetString("default", "mysql_dbuser")
-	conf.dbpwd, _       = c.GetString("default", "mysql_dbpwd")
-
-	conf.sport, _       = c.GetString("default", "ssh_port")
-	conf.suser, _       = c.GetString("default", "ssh_user")
-	conf.skey, _        = c.GetString("default", "ssh_key")
-	conf.sto, err       = c.GetInt64("default", "ssh_timeout")
+	conf.addr, err = c.GetString("default", "addr")
 	if err != nil {
-		conf.sto = DEFAULT_SSH_TIMEOUT
+		fmt.Fprintln(os.Stderr, "[Error] Read conf: No addr")
+		return nil, err
+	}
+	conf.location, err = c.GetString("default", "location")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Error] Read conf: No addr")
+		return nil, err
 	}
 
-	conf.ips, _         = c.GetString("default", "purge_ips")
-	conf.cmd, _         = c.GetString("default", "purge_cmd")
+	conf.log, err = c.GetString("default", "log")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Info] log not found, use default log file")
+		conf.log = ""
+	}
+	conf.level, err = c.GetString("default", "level")
+	if err != nil {
+		conf.level = "error"
+		fmt.Fprintln(os.Stderr, "[Info] level not found, use default log level error")
+	}
+
+	conf.maddr, err = c.GetString("default", "mysql_addr")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Error] Read conf: No mysql_addr")
+		return nil, err
+	}
+	conf.dbname, err = c.GetString("default", "mysql_dbname")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Error] Read conf: No mysql_dbname")
+		return nil, err
+	}
+	conf.dbuser, err = c.GetString("default", "mysql_dbuser")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Error] Read conf: No mysql_dbuser")
+		return nil, err
+	}
+	conf.dbpwd, err = c.GetString("default", "mysql_dbpwd")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Error] Read conf: No mysql_dbpwd")
+		return nil, err
+	}
+
+	conf.sport, err = c.GetString("default", "ssh_port")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Error] Read conf: No ssh_port")
+		return nil, err
+	}
+	conf.suser, err = c.GetString("default", "ssh_user")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Error] Read conf: No ssh_user")
+		return nil, err
+	}
+	conf.skey, err = c.GetString("default", "ssh_key")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Error] Read conf: No ssh_key")
+		return nil, err
+	}
+	conf.sto, err = c.GetInt64("default", "ssh_timeout")
+	if err != nil {
+		conf.sto = DEFAULT_SSH_TIMEOUT
+		fmt.Fprintln(os.Stderr, "[Info] ssh_timeout not found, use default timeout")
+	}
+
+	conf.purgable = 1
+	conf.ips, err = c.GetString("default", "purge_ips")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Info] purge_ips not found, do not purge")
+		conf.purgable = 0
+	}
+	conf.cmd, err = c.GetString("default", "purge_cmd")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Info] purge_cmd not found, do not purge")
+		conf.purgable = 0
+	}
 
 	return conf, nil
 }

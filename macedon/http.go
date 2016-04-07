@@ -61,7 +61,7 @@ func (hs *HttpServer) Run() error {
 }
 
 func (hs *HttpServer) AddRouter(location string) error {
-	hs.log.Debug("Add router", location)
+	hs.log.Debug("Add router %s", location)
 
 	//TODO: deal invalid location
 	hs.location = location
