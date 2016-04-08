@@ -266,6 +266,7 @@ func (h *UpdateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	like := 0
 	if req.Method != "POST" {
 		h.log.Error("Method invalid: %s", req.Method)
 		http.Error(w, "Method invalid", http.StatusBadRequest)
@@ -302,6 +303,11 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Type invalid", http.StatusBadRequest)
 		return
 	}
+	name := data.Name
+	if strings.Contains(data.Name, "*") {
+		name = strings.Replace(data.Name, "*", "%", -1)
+		like = 1
+	}
 
 	mc := h.hs.Server().MysqlContext()
 	db, err := mc.Open()
@@ -312,7 +318,8 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	defer mc.Close(db)
 
-	resp, err := mc.QueryRead(db, data.Name, data.Type)
+	resp, err := mc.QueryRead(db, name, data.Type, like)
+	resp.Result.Data.Name = data.Name
 
 	returnResponse(w, req, resp, err, h.log)
 }

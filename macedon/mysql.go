@@ -22,6 +22,7 @@ const DNS_DELETE_SQL          = "delete from records where name = ? and type = ?
 const DNS_DELETE_SQL_CONTENT  = "delete from records where name = ? and type = ? and content = ?"
 const DNS_UPDATE_SQL          = "update records set disabled = ? where name = ? and type = ? and content = ?"
 const DNS_READ_SQL            = "select domain_id, content, ttl, disabled from records where name = ? AND type = ?"
+const DNS_READ_LIKE_SQL       = "select domain_id, content, ttl, disabled from records where name like ? AND type = ?"
 const DNS_NOTIFY_SQL          = "update domains set notified_serial = notified_serial + 1 where name = ?"
 
 
@@ -51,8 +52,8 @@ func (mc *MysqlContext) Close(db *sql.DB) error{
 	return db.Close()
 }
 
-func (mc *MysqlContext) QueryRead(db *sql.DB, name, type_s string) (*Response, error) {
-	var content string
+func (mc *MysqlContext) QueryRead(db *sql.DB, name, type_s string, like int) (*Response, error) {
+	var content, query string
 	var domain_id, ttl, disabled int
 	ret := &Response{}
 	flag := 0
@@ -62,7 +63,12 @@ func (mc *MysqlContext) QueryRead(db *sql.DB, name, type_s string) (*Response, e
 		return nil, BadRequestError
 	}
 
-	rows, err := db.Query(DNS_READ_SQL, name, type_s)
+	if like == 0 {
+		query = DNS_READ_SQL
+	} else {
+		query = DNS_READ_LIKE_SQL
+	}
+	rows, err := db.Query(query, name, type_s)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			mc.log.Error("Scan no answer")
@@ -97,6 +103,7 @@ func (mc *MysqlContext) QueryRead(db *sql.DB, name, type_s string) (*Response, e
 		rec.Content = content
 		rec.Disabled = disabled
 		ret.Result.Data.Records = append(ret.Result.Data.Records, *rec)
+		ret.Result.Affected++
 	}
 
 	if flag == 0 {
