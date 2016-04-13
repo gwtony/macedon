@@ -9,7 +9,7 @@ import (
 )
 
 const DEFAULT_CONF_PATH         = "../conf"
-const DEFAULT_CONF              = "macedon.conf"
+const DEFAULT_CONF              = "macedon_new.conf"
 
 const DEFAULT_CREATE_LOCATION   = "/create"
 const DEFAULT_DELETE_LOCATION   = "/delete"
@@ -38,6 +38,9 @@ type Config struct {
 	ips        string  /* ip to purge */
 	cmd        string  /* purge command */
 	purgable   int     /* do purge or not */
+
+	dns_server string  /* dns server address */
+	updatable  int     /* do dns update or not */
 
 	log        string  /* log file */
 	level      string  /* log level */
@@ -129,6 +132,13 @@ func (conf *Config) ReadConf(file string) (*Config, error) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "[Info] purge_cmd not found, do not purge")
 		conf.purgable = 0
+	}
+
+	conf.updatable = 1
+	conf.dns_server, err = c.GetString("default", "dns_server")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Info] dns_server not found, do not update")
+		conf.updatable = 0
 	}
 
 	return conf, nil

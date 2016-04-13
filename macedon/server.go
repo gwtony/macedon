@@ -13,6 +13,7 @@ type Server struct {
 	pc      *PurgeContext
 	mc      *MysqlContext
 	sc      *SshContext
+	dns     *DnsUpdater
 
 	log     *Log
 }
@@ -50,6 +51,7 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 		pc, err := InitPurgeContext(conf.ips, conf.sport, conf.cmd, s.log)
 		if err != nil {
 			s.log.Error("Init purge context failed")
+			return nil, err
 		}
 		s.pc = pc
 
@@ -59,9 +61,20 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 			return nil, err
 		}
 		s.sc = sc
-	} else {
+	} else { /* Do not purge */
 		s.pc = nil
 		s.sc = nil
+	}
+
+	if conf.updatable == 1 {
+		dns, err := InitDnsUpdater(conf.dns_server, s.log)
+		if err != nil {
+			s.log.Error("Init dns updater failed")
+			return nil, err
+		}
+		s.dns = dns
+	} else { /* Do not update */
+		s.dns = nil
 	}
 
 	return s, nil

@@ -74,7 +74,3 @@ func (hs *HttpServer) AddRouter(location string) error {
 
 	return nil
 }
-
-func (hs *HttpServer) Server() (*Server) {
-	return hs.s
-}

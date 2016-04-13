@@ -8,6 +8,7 @@ type Record struct {
 type Request struct {
 	Name        string
 	Type        string
+	Zname       string
 	Domain_id   int
 	Ttl         int
 	Records     []Record

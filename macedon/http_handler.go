@@ -29,29 +29,28 @@ type NotifyHandler struct {
 	log *Log
 }
 
-func returnResponse(w http.ResponseWriter, req *http.Request, resp *Response, err error, log *Log) {
-	if err != nil {
-		if err == NoContentError {
-			log.Debug("Request no content")
-			http.Error(w, "", http.StatusNoContent)
-			return
-		}
-		if err == BadRequestError {
-			log.Debug("Return bad request")
-			http.Error(w, "", http.StatusBadRequest)
-			return
-		}
-		if err == BadGatewayError {
-			log.Debug("Return bad gateway")
-			http.Error(w, "", http.StatusBadGateway)
-			return
-		}
-
-		log.Debug("Return internal server error")
-		http.Error(w, "", http.StatusInternalServerError)
+func returnError(w http.ResponseWriter, resp *Response, err error, log *Log) {
+	if err == NoContentError {
+		log.Debug("Request no content")
+		http.Error(w, "", http.StatusNoContent)
+		return
+	}
+	if err == BadRequestError {
+		log.Debug("Return bad request")
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
+	if err == BadGatewayError {
+		log.Debug("Return bad gateway")
+		http.Error(w, "", http.StatusBadGateway)
 		return
 	}
 
+	log.Debug("Return internal server error")
+	http.Error(w, "", http.StatusInternalServerError)
+}
+
+func returnResponse(w http.ResponseWriter, resp *Response, log *Log) {
 	respj, err := json.Marshal(resp)
 	if err != nil {
 		log.Error("Encode json failed: ", resp)
@@ -92,9 +91,9 @@ func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	h.log.Info("Create record request: ", data)
 
 	/* Check input */
-	if data.Name == "" || data.Type == "" {
+	if data.Name == "" || data.Type == "" || data.Zname == "" {
 		h.log.Error("Post arguments invalid")
-		http.Error(w, "Name or Type invalid", http.StatusBadRequest)
+		http.Error(w, "Name, Zname or Type invalid", http.StatusBadRequest)
 		return
 	}
 	if data.Domain_id < 0 || data.Ttl <= 0 || len(data.Records) <= 0 {
@@ -117,7 +116,7 @@ func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	mc := h.hs.Server().MysqlContext()
+	mc := h.hs.s.MysqlContext()
 	db, err := mc.Open()
 	if err != nil {
 		mc.log.Error("Mysql open failed")
@@ -129,7 +128,14 @@ func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	rec := data.Records[0]
 	resp, err := mc.QueryCreate(db, data.Name, data.Type, rec.Content, data.Domain_id, data.Ttl)
 
-	returnResponse(w, req, resp, err, h.log)
+	if err != nil {
+		returnError(w, resp, err, h.log)
+		return
+	}
+
+	go h.hs.s.dns.UpdateCreate(data.Zname, data.Name, data.Type, rec.Content, data.Ttl)
+
+	returnResponse(w, resp, h.log)
 }
 
 func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -159,9 +165,9 @@ func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	h.log.Info("Delete record request: ", data)
 
 	/* Check input */
-	if data.Name == "" || data.Type == "" {
+	if data.Name == "" || data.Type == "" || data.Zname == "" {
 		h.log.Error("Post arguments invalid")
-		http.Error(w, "Name or Type invalid", http.StatusBadRequest)
+		http.Error(w, "Name, Zname or Type invalid", http.StatusBadRequest)
 		return
 	}
 	if !strings.EqualFold(data.Type, "a") &&
@@ -171,13 +177,13 @@ func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Type invalid", http.StatusBadRequest)
 		return
 	}
-	if len(data.Records) == 0 || data.Records[0].Content == "" {
-			h.log.Error("Empty content in records")
+	if len(data.Records) > 0 && data.Records[0].Content == "" {
+		h.log.Error("Empty content in records")
 		http.Error(w, "Records invalid", http.StatusBadRequest)
 		return
 	}
 
-	mc := h.hs.Server().MysqlContext()
+	mc := h.hs.s.MysqlContext()
 	db, err := mc.Open()
 	if err != nil {
 		mc.log.Error("Mysql open failed")
@@ -186,17 +192,28 @@ func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	defer mc.Close(db)
 
+	content := ""
 	if len(data.Records) > 0 {
-		rec :=  data.Records[0]
-		resp, err = mc.QueryDelete(db, data.Name, data.Type, rec.Content)
-	} else {
-		resp, err = mc.QueryDelete(db, data.Name, data.Type, "")
-	}
-	if err == nil && h.hs.s.pc != nil {
-		go h.hs.s.pc.DoPurge(h.hs.s.sc)
+		content = data.Records[0].Content
 	}
 
-	returnResponse(w, req, resp, err, h.log)
+	resp, err = mc.QueryDelete(db, data.Name, data.Type, content)
+
+	if err != nil {
+		returnError(w, resp, err, h.log)
+		return
+	}
+
+	go func() {
+		if h.hs.s.dns != nil {
+			h.hs.s.dns.UpdateDelete(data.Zname, data.Name, data.Type, content)
+		}
+		if h.hs.s.pc != nil {
+			go h.hs.s.pc.DoPurge(h.hs.s.sc)
+		}
+	}()
+
+	returnResponse(w, resp, h.log)
 }
 
 func (h *UpdateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -224,9 +241,14 @@ func (h *UpdateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	h.log.Info("Update record request: ", data)
 
 	/* Check input */
-	if data.Name == "" || data.Type == "" {
+	if data.Name == "" || data.Type == "" || data.Zname == "" {
 		h.log.Error("Post arguments invalid")
-		http.Error(w, "Name or Type invalid", http.StatusBadRequest)
+		http.Error(w, "Name, Zname or Type invalid", http.StatusBadRequest)
+		return
+	}
+	if data.Ttl <= 0 {
+		h.log.Error("Rtl invalid")
+		http.Error(w, "Rtl invalid", http.StatusBadRequest)
 		return
 	}
 	if !strings.EqualFold(data.Type, "a") &&
@@ -247,7 +269,7 @@ func (h *UpdateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	mc := h.hs.Server().MysqlContext()
+	mc := h.hs.s.MysqlContext()
 	db, err := mc.Open()
 	if err != nil {
 		mc.log.Error("Mysql open failed")
@@ -258,11 +280,25 @@ func (h *UpdateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	rec := data.Records[0]
 	resp, err := mc.QueryUpdate(db, data.Name, data.Type, rec.Content, rec.Disabled)
-	if err == nil && h.hs.s.pc != nil {
-		go h.hs.s.pc.DoPurge(h.hs.s.sc)
+	if err != nil {
+		returnError(w, resp, err, h.log)
+		return
 	}
 
-	returnResponse(w, req, resp, err, h.log)
+	go func() {
+		if h.hs.s.dns != nil {
+			if (rec.Disabled == 1) {
+				h.hs.s.dns.UpdateDelete(data.Zname, data.Name, data.Type, rec.Content)
+			} else {
+				h.hs.s.dns.UpdateCreate(data.Zname, data.Name, data.Type, rec.Content, data.Ttl)
+			}
+		}
+		if h.hs.s.pc != nil {
+			go h.hs.s.pc.DoPurge(h.hs.s.sc)
+		}
+	}()
+
+	returnResponse(w, resp, h.log)
 }
 
 func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -303,13 +339,15 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Type invalid", http.StatusBadRequest)
 		return
 	}
+
+	/* Deal wildcard */
 	name := data.Name
 	if strings.Contains(data.Name, "*") {
 		name = strings.Replace(data.Name, "*", "%", -1)
 		like = 1
 	}
 
-	mc := h.hs.Server().MysqlContext()
+	mc := h.hs.s.MysqlContext()
 	db, err := mc.Open()
 	if err != nil {
 		h.log.Error("Mysql open failed")
@@ -321,7 +359,12 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	resp, err := mc.QueryRead(db, name, data.Type, like)
 	resp.Result.Data.Name = data.Name
 
-	returnResponse(w, req, resp, err, h.log)
+	if err != nil {
+		returnError(w, resp, err, h.log)
+		return
+	}
+
+	returnResponse(w, resp, h.log)
 }
 
 func (h *NotifyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -349,13 +392,13 @@ func (h *NotifyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	h.log.Info("Notify record request: ", data)
 
 	/* Check input */
-	if data.Name == "" {
+	if data.Zname == "" {
 		h.log.Error("Post arguments invalid")
-		http.Error(w, "Name invalid", http.StatusBadRequest)
+		http.Error(w, "Zname invalid", http.StatusBadRequest)
 		return
 	}
 
-	mc := h.hs.Server().MysqlContext()
+	mc := h.hs.s.MysqlContext()
 	db, err := mc.Open()
 	if err != nil {
 		mc.log.Error("Mysql open failed")
@@ -364,7 +407,12 @@ func (h *NotifyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	defer mc.Close(db)
 
-	resp, err := mc.QueryNotify(db, data.Name)
+	resp, err := mc.QueryNotify(db, data.Zname)
 
-	returnResponse(w, req, resp, err, h.log)
+	if err != nil {
+		returnError(w, resp, err, h.log)
+		return
+	}
+
+	returnResponse(w, resp, h.log)
 }
