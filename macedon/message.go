@@ -24,3 +24,9 @@ type ResponseResult struct {
 type Response struct {
 	Result	ResponseResult
 }
+
+type ConsulRequest struct {
+	ID      string
+	Name    string
+	Address string
+}
