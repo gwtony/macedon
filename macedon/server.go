@@ -84,7 +84,8 @@ func (s *Server) SshContext() (*SshContext) {
 func (s *Server) Run() error {
 	err := s.hs.Run()
 	if err != nil {
-		s.log.Error("Server run failed")
+		s.log.Error("Server run failed: ", err)
+		return err
 	}
 
 	return nil

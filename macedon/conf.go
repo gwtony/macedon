@@ -8,18 +8,6 @@ import (
 	goconf "github.com/msbranco/goconfig"
 )
 
-//const DEFAULT_CONF_PATH         = "../conf"
-//const DEFAULT_CONF              = "macedon_new.conf"
-//
-//const DEFAULT_CREATE_LOCATION   = "/create"
-//const DEFAULT_DELETE_LOCATION   = "/delete"
-//const DEFAULT_UPDATE_LOCATION   = "/update"
-//const DEFAULT_READ_LOCATION     = "/read"
-//const DEFAULT_NOTIFY_LOCATION   = "/notify"
-//
-//const DEFAULT_SSH_TIMEOUT       = 5
-
-
 type Config struct {
 	addr       string  /* server bind address */
 
@@ -55,7 +43,6 @@ func (conf *Config) ReadConf(file string) (*Config, error) {
 		return nil, err
 	}
 
-	//TODO: check
 	conf.addr, err = c.GetString("default", "addr")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "[Error] Read conf: No addr")

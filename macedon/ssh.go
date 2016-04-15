@@ -4,15 +4,12 @@ import (
 	"golang.org/x/crypto/ssh"
 	"io/ioutil"
 	"net"
-	//"os"
-	//"io"
 	"time"
 	"sync"
 	"fmt"
 )
 
 var DefaultTimeout = 5 * time.Second
-//var DefaultScpCmd = "/usr/bin/scp -qrt "
 
 type SshContext struct {
 	user    string

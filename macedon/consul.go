@@ -10,19 +10,6 @@ import (
 	"encoding/json"
 )
 
-//var {
-//	DEFAULT_HEADER = "application/json;charset=utf-8"
-//	REGISTER_LOC   = "/v1/agent/register"
-//	UNREGISTER_LOC = "/v1/agent/unregister"
-//	READ_LOC       = "/v1/agent/" //TODO:
-//}
-
-//const (
-//	REG = iota
-//	UNREG
-//	READ
-//)
-
 type ConsulContext struct {
 	addrs     []string
 	index     int
@@ -38,14 +25,15 @@ type ConsulContext struct {
 func InitConsulContext(addrs_str, reg_loc, dereg_loc, read_loc string, log *Log) (*ConsulContext, error) {
 	cc := &ConsulContext{}
 
-	//TODO: deal addrs
 	addrs := strings.Split(addrs_str, ",")
 	for i, addr := range addrs {
 		if !strings.Contains(addr, ":") {
 			addrs[i] = addr + ":" + DEFAULT_CONSUL_API_PORT
 		}
 	}
+
 	log.Debug("Consul context addrs is: ", addrs)
+
 	cc.addrs     = addrs
 	cc.index     = 0
 	cc.addr_num  = len(addrs)
@@ -58,10 +46,10 @@ func InitConsulContext(addrs_str, reg_loc, dereg_loc, read_loc string, log *Log)
 }
 
 func (cc *ConsulContext) getServer() string {
-	//cc.index = (cc.index + 1) % cc.addr_num
+	cc.index = (cc.index + 1) % cc.addr_num
 
-	//return cc.addrs[cc.index]
-	return cc.addrs[0]
+	return cc.addrs[cc.index]
+	//return cc.addrs[0]
 }
 
 func (cc *ConsulContext) OperateService(name, addr, id string, op int) (*ConsulResponse, error) {
@@ -89,11 +77,9 @@ func (cc *ConsulContext) OperateService(name, addr, id string, op int) (*ConsulR
 
 	switch op {
 	case REGISTER:
-		cc.log.Debug("http://" + cc.getServer() + cc.reg_loc, DEFAULT_CONTENT_HEADER, data)
 		resp, err = http.Post("http://" + cc.getServer() + cc.reg_loc, DEFAULT_CONTENT_HEADER, data)
 		break
 	case DEREGISTER:
-		cc.log.Debug("http://" + cc.getServer() + cc.dereg_loc + id)
 		resp, err = http.Get("http://" + cc.getServer() + cc.dereg_loc + id)
 		break
 	case READ:
