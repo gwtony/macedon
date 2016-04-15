@@ -1,12 +1,10 @@
 # macedon-go
 Description
 ===========
-Http api for consul
+Http (with purge dns) api for consul
 * create a record
 * delete a record
 * read a record
-
-
 
 Config Sample
 =============
