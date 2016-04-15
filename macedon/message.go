@@ -1,32 +1,31 @@
 package macedon
 
-type Record struct {
-	Content     string
-	Disabled    int
-}
-
+/* Http message struct */
 type Request struct {
 	Name        string
-	Type        string
-	Zname       string
-	Domain_id   int
-	Ttl         int
-	Records     []Record
+	Address     string
+	Port        int
 }
 
-type ResponseData Request
+type Response []Request
 
-type ResponseResult struct {
-	Affected    int
-	Data        ResponseData
-}
 
-type Response struct {
-	Result	ResponseResult
-}
-
+/* Consul message struct */
 type ConsulRequest struct {
 	ID      string
 	Name    string
 	Address string
+	Port    int
 }
+
+type CResponse struct {
+	Node           string
+	Address        string
+	ServiceID      string
+	ServiceName    string
+	ServiceAddress string
+	ServicePort    int
+}
+
+type ConsulResponse []CResponse
+

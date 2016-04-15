@@ -12,7 +12,7 @@ import (
 )
 
 var DefaultTimeout = 5 * time.Second
-var DefaultScpCmd = "/usr/bin/scp -qrt "
+//var DefaultScpCmd = "/usr/bin/scp -qrt "
 
 type SshContext struct {
 	user    string

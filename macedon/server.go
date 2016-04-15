@@ -11,9 +11,8 @@ type Server struct {
 	hs      *HttpServer
 
 	pc      *PurgeContext
-	mc      *MysqlContext
+	cc      *ConsulContext
 	sc      *SshContext
-	dns     *DnsUpdater
 
 	log     *Log
 }
@@ -40,13 +39,6 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 		return nil, err
 	}
 
-	mc, err := InitMysqlContext(conf.maddr, conf.dbname, conf.dbuser, conf.dbpwd, s.log)
-	if err != nil {
-		s.log.Error("Init mysql client faild")
-		return nil, err
-	}
-	s.mc = mc
-
 	if conf.purgable == 1 {
 		pc, err := InitPurgeContext(conf.ips, conf.sport, conf.cmd, s.log)
 		if err != nil {
@@ -66,16 +58,13 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 		s.sc = nil
 	}
 
-	if conf.updatable == 1 {
-		dns, err := InitDnsUpdater(conf.dns_server, s.log)
-		if err != nil {
-			s.log.Error("Init dns updater failed")
-			return nil, err
-		}
-		s.dns = dns
-	} else { /* Do not update */
-		s.dns = nil
+	cc, err := InitConsulContext(conf.caddr, conf.reg_loc, conf.dereg_loc, conf.read_loc, s.log)
+	if err != nil {
+		s.log.Error("Init consul context failed")
+		return nil, err
 	}
+	s.cc = cc
+	s.domain = DEFAULT_SUB_ZONE + conf.domain
 
 	return s, nil
 }
