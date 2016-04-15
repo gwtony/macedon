@@ -38,6 +38,7 @@ type Config struct {
 	reg_loc    string  /* register location */
 	dereg_loc  string  /* deregister location */
 	read_loc   string  /* read location */
+	domain     string  /* consul domain name */
 
 	log        string  /* log file */
 	level      string  /* log level */
@@ -114,26 +115,26 @@ func (conf *Config) ReadConf(file string) (*Config, error) {
 		fmt.Fprintln(os.Stderr, "[Error] Read conf: no consul_addrs")
 		return nil, err
 	}
-	conf.register_location, err = c.GetString("default", "register_location")
+	conf.reg_loc, err = c.GetString("default", "register_location")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "[Error] Read conf: no register_location")
-		return nil, err
+		conf.reg_loc = DEFAULT_REGISTER_LOC
+		fmt.Fprintln(os.Stderr, "[Info] register_location not found, use default")
 	}
-	conf.deregister_location, err = c.GetString("default", "deregister_location")
+	conf.dereg_loc, err = c.GetString("default", "deregister_location")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "[Error] Read conf: no deregister_location")
-		return nil, err
+		conf.dereg_loc = DEFAULT_DEREGISTER_LOC
+		fmt.Fprintln(os.Stderr, "[Info] deregister_location not found, use default")
 	}
-	conf.read_location, err = c.GetString("default", "read_location")
+	conf.read_loc, err = c.GetString("default", "read_location")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "[Error] Read conf: no read_location")
-		return nil, err
+		conf.read_loc = DEFAULT_READ_LOC
+		fmt.Fprintln(os.Stderr, "[Info] read_location not found, use default")
 	}
 	conf.domain, err = c.GetString("default", "domain")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "[Error] Read conf: no domain")
 		return nil, err
-
+	}
 	return conf, nil
 }
 

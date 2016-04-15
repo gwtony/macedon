@@ -1,9 +1,13 @@
 package macedon
 
 import (
+	"fmt"
 	"time"
+	"bytes"
+	"strings"
 	"net/http"
 	"io/ioutil"
+	"encoding/json"
 )
 
 //var {
@@ -25,34 +29,45 @@ type ConsulContext struct {
 	addr_num  int
 
 	reg_loc   string
-	unreg_loc string
+	dereg_loc string
 	read_loc  string
 
 	log       *Log
 }
 
-func InitConsulContext(addrs, reg_loc, dereg_loc, read_loc string, log *Log) (*ConsulContext, error) {
+func InitConsulContext(addrs_str, reg_loc, dereg_loc, read_loc string, log *Log) (*ConsulContext, error) {
 	cc := &ConsulContext{}
 
 	//TODO: deal addrs
+	addrs := strings.Split(addrs_str, ",")
+	for i, addr := range addrs {
+		if !strings.Contains(addr, ":") {
+			addrs[i] = addr + ":" + DEFAULT_CONSUL_API_PORT
+		}
+	}
+	log.Debug("Consul context addrs is: ", addrs)
+	cc.addrs     = addrs
+	cc.index     = 0
+	cc.addr_num  = len(addrs)
 	cc.reg_loc   = reg_loc
-	cc.dereg_loc   = dereg_loc
-	cc.read_loc = read_loc
-	cc.log      = log
+	cc.dereg_loc = dereg_loc
+	cc.read_loc  = read_loc
+	cc.log       = log
 
-	return cc
+	return cc, nil
 }
 
-func (cc *ConsulContext) getServer() (string, error) {
-	cc.index = (cc.index + 1) % cc.addr_num
+func (cc *ConsulContext) getServer() string {
+	//cc.index = (cc.index + 1) % cc.addr_num
 
-	return cc.addrs[cc.index], nil
+	//return cc.addrs[cc.index]
+	return cc.addrs[0]
 }
 
 func (cc *ConsulContext) OperateService(name, addr, id string, op int) (*ConsulResponse, error) {
-	resp := nil
+	var resp *http.Response
 
-	if op == READ && id == "" {
+	if op != READ && id == "" {
 		cc.log.Error("Modify service without id")
 		return nil, InternalServerError
 	}
@@ -61,6 +76,7 @@ func (cc *ConsulContext) OperateService(name, addr, id string, op int) (*ConsulR
 
 	r.Name = name
 	r.Address = addr
+	r.ID = id
 
 	b, err := json.Marshal(r)
 	if err != nil {
@@ -69,29 +85,23 @@ func (cc *ConsulContext) OperateService(name, addr, id string, op int) (*ConsulR
 	}
 	cc.log.Debug(string(b))
 
-	data := bytes.NewBuffer([]byte(b))
+	data := bytes.NewBuffer(b)
 
-	location := ""
-
-	swithc op {
-	case REG:
-		location = cc.reg_loc
+	switch op {
+	case REGISTER:
+		cc.log.Debug("http://" + cc.getServer() + cc.reg_loc, DEFAULT_CONTENT_HEADER, data)
+		resp, err = http.Post("http://" + cc.getServer() + cc.reg_loc, DEFAULT_CONTENT_HEADER, data)
 		break
-	case UNREG:
-		location = cc.dereg_loc
+	case DEREGISTER:
+		cc.log.Debug("http://" + cc.getServer() + cc.dereg_loc + id)
+		resp, err = http.Get("http://" + cc.getServer() + cc.dereg_loc + id)
 		break
 	case READ:
-		location = cc.read_loc
+		resp, err = http.Get("http://" + cc.getServer() + cc.read_loc + name)
 		break
 	default: /* Should not reach here */
 		cc.log.Error("Unknown operate code: ", op)
 		return nil, InternalServerError
-	}
-
-	if op == UNREG {
-		resp, err = http.Get(cc.getServer() + location + id)
-	} else {
-		resp, err = http.Post(cc.getServer() + location, DEFAULT_CONTENT_HEADER, data)
 	}
 
 	if err != nil {
@@ -140,27 +150,26 @@ func (cc *ConsulContext) DeRegisterService(name, addr string) error {
 		found = false
 	}
 
-	resps, err := cc.OperateService(name, addr, READ)
+	resps, err := cc.OperateService(name, addr, "", READ)
 	if err != nil {
 		cc.log.Error("Deregister service failed")
 		return err
 	}
-	if len(resps) == 0 {
+	if len(*resps) == 0 {
 		cc.log.Info("Service %s not found", name)
 		return NoContentError
 	}
-	for _, resp := range resps {
+	for _, resp := range *resps {
 		if addr != "" {
 			if strings.EqualFold(resp.ServiceAddress, addr) {
 				found = true
-				_, err = cc.OperateService(name, addr, resp.ServiceID, UNREGISTER)
+				_, err = cc.OperateService(name, addr, resp.ServiceID, DEREGISTER)
 				if err != nil {
 					return err
 				}
-				break
 			}
 		} else {
-			_, err = cc.OperateService(name, addr, resp.ServiceID, UNREGISTER)
+			_, err = cc.OperateService(name, addr, resp.ServiceID, DEREGISTER)
 			if err != nil {
 				return err
 			}
@@ -174,7 +183,7 @@ func (cc *ConsulContext) DeRegisterService(name, addr string) error {
 	return nil
 }
 
-func (cc *ConsulContext) ListService(name string) (*ConsulResponse, error) {
-	return cc.OperateService(name, addr, READ)
+func (cc *ConsulContext) ListService(name, addr string) (*ConsulResponse, error) {
+	return cc.OperateService(name, addr, "", READ)
 }
 

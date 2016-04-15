@@ -16,20 +16,12 @@ type DeleteHandler struct {
 	hs  *HttpServer
 	log *Log
 }
-type UpdateHandler struct {
-	hs  *HttpServer
-	log *Log
-}
 type ReadHandler struct {
 	hs  *HttpServer
 	log *Log
 }
-type NotifyHandler struct {
-	hs  *HttpServer
-	log *Log
-}
 
-func returnError(w http.ResponseWriter, resp *Response, err error, log *Log) {
+func returnError(w http.ResponseWriter, err error, log *Log) {
 	if err == NoContentError {
 		log.Debug("Request no content")
 		http.Error(w, "", http.StatusNoContent)
@@ -51,6 +43,11 @@ func returnError(w http.ResponseWriter, resp *Response, err error, log *Log) {
 }
 
 func returnResponse(w http.ResponseWriter, resp *Response, log *Log) {
+	if resp == nil {
+		log.Debug("Return OK")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 	respj, err := json.Marshal(resp)
 	if err != nil {
 		log.Error("Encode json failed: ", resp)
@@ -97,7 +94,7 @@ func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if !HasSuffix(data.Name, h.hs.s.domain) {
+	if !strings.HasSuffix(data.Name, h.hs.s.domain) {
 		h.log.Error("Post arguments domain invalid")
 		http.Error(w, "Domain in name invalid", http.StatusBadRequest)
 		return
@@ -107,16 +104,14 @@ func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	err = h.hs.s.cc.RegisterService(name, data.Address)
 
 	if err != nil {
-		returnError(w, resp, err, h.log)
+		returnError(w, err, h.log)
 		return
 	}
 
-	returnResponse(w, resp, h.log)
+	returnResponse(w, nil, h.log)
 }
 
 func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	var resp *Response
-
 	if req.Method != "POST" {
 		h.log.Error("Method invalid: %s", req.Method)
 		http.Error(w, "Method invalid", http.StatusBadRequest)
@@ -147,18 +142,16 @@ func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if !HasSuffix(data.Name, h.hs.s.domain) {
+	if !strings.HasSuffix(data.Name, h.hs.s.domain) {
 		h.log.Error("Post arguments domain invalid")
 		http.Error(w, "Domain in name invalid", http.StatusBadRequest)
 		return
 	}
 	name := strings.TrimSuffix(data.Name, h.hs.s.domain)
 
-	err = h.hs.s.cc.RegisterService(name, data.Address)
-
-	err = h.hs.s.cc.DeRegisterService(data.Name, data.Address)
+	err = h.hs.s.cc.DeRegisterService(name, data.Address)
 	if err != nil {
-		returnError(w, resp, err, h.log)
+		returnError(w, err, h.log)
 		return
 	}
 
@@ -168,11 +161,10 @@ func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 	}()
 
-	returnResponse(w, resp, h.log)
+	returnResponse(w, nil, h.log)
 }
 
 func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	like := 0
 	if req.Method != "POST" {
 		h.log.Error("Method invalid: %s", req.Method)
 		http.Error(w, "Method invalid", http.StatusBadRequest)
@@ -203,21 +195,27 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if !HasSuffix(data.Name, h.hs.s.domain) {
+	if !strings.HasSuffix(data.Name, h.hs.s.domain) {
 		h.log.Error("Post arguments domain invalid")
 		http.Error(w, "Domain in name invalid", http.StatusBadRequest)
 		return
 	}
 	name := strings.TrimSuffix(data.Name, h.hs.s.domain)
 
-	err = h.hs.s.cc.RegisterService(name, data.Address)
-
 	//TODO: Deal wildcard */
-	err = h.hs.s.cc.ListService(data.Name)
+	cresps, err := h.hs.s.cc.ListService(name, data.Address)
 	if err != nil {
-		returnError(w, resp, err, h.log)
+		returnError(w, err, h.log)
 		return
 	}
+	resps := &Response{}
+	for _, cresp := range *cresps {
+		resp := Request{}
+		resp.Name    = cresp.ServiceName
+		resp.Address = cresp.ServiceAddress
+		resp.Port    = cresp.ServicePort
+		*resps = append(*resps, resp)
+	}
 
-	returnResponse(w, resp, h.log)
+	returnResponse(w, resps, h.log)
 }

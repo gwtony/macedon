@@ -1,7 +1,5 @@
 package macedon
 
-
-
 const (
 	REGISTER = iota
 	DEREGISTER
@@ -12,9 +10,9 @@ const (
 
 	DEFAULT_CONTENT_HEADER = "application/json;charset=utf-8"
 
-	REGISTER_LOC   = "/v1/agent/register"
-	UNREGISTER_LOC = "/v1/agent/unregister/"
-	READ_LOC       = "/v1/catalog/services" //TODO:
+	DEFAULT_REGISTER_LOC   = "/v1/agent/service/register"
+	DEFAULT_DEREGISTER_LOC = "/v1/agent/service/deregister/"
+	DEFAULT_READ_LOC       = "/v1/catalog/service/"
 
 	DefaultScpCmd = "/usr/bin/scp -qrt "
 
@@ -24,6 +22,8 @@ const (
 	DEFAULT_CREATE_LOCATION   = "/create"
 	DEFAULT_DELETE_LOCATION   = "/delete"
 	DEFAULT_READ_LOCATION     = "/read"
+
+	DEFAULT_CONSUL_API_PORT   = "8600"
 
 	DEFAULT_SSH_TIMEOUT       = 5
 

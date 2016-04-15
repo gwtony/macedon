@@ -9,7 +9,6 @@ type Request struct {
 
 type Response []Request
 
-
 /* Consul message struct */
 type ConsulRequest struct {
 	ID      string

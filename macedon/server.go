@@ -13,6 +13,7 @@ type Server struct {
 	pc      *PurgeContext
 	cc      *ConsulContext
 	sc      *SshContext
+	domain  string
 
 	log     *Log
 }
@@ -67,10 +68,6 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 	s.domain = DEFAULT_SUB_ZONE + conf.domain
 
 	return s, nil
-}
-
-func (s *Server) MysqlContext() (*MysqlContext) {
-	return s.mc
 }
 
 func (s *Server) HttpServer() (*HttpServer) {
