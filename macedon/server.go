@@ -11,8 +11,9 @@ type Server struct {
 	hs      *HttpServer
 
 	pc      *PurgeContext
-	mc      *MysqlContext
+	cc      *ConsulContext
 	sc      *SshContext
+	domain  string
 
 	log     *Log
 }
@@ -39,17 +40,11 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 		return nil, err
 	}
 
-	mc, err := InitMysqlContext(conf.maddr, conf.dbname, conf.dbuser, conf.dbpwd, s.log)
-	if err != nil {
-		s.log.Error("Init mysql client faild")
-		return nil, err
-	}
-	s.mc = mc
-
 	if conf.purgable == 1 {
 		pc, err := InitPurgeContext(conf.ips, conf.sport, conf.cmd, s.log)
 		if err != nil {
 			s.log.Error("Init purge context failed")
+			return nil, err
 		}
 		s.pc = pc
 
@@ -59,16 +54,20 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 			return nil, err
 		}
 		s.sc = sc
-	} else {
+	} else { /* Do not purge */
 		s.pc = nil
 		s.sc = nil
 	}
 
-	return s, nil
-}
+	cc, err := InitConsulContext(conf.caddr, conf.reg_loc, conf.dereg_loc, conf.read_loc, s.log)
+	if err != nil {
+		s.log.Error("Init consul context failed")
+		return nil, err
+	}
+	s.cc = cc
+	s.domain = DEFAULT_SUB_ZONE + conf.domain
 
-func (s *Server) MysqlContext() (*MysqlContext) {
-	return s.mc
+	return s, nil
 }
 
 func (s *Server) HttpServer() (*HttpServer) {
@@ -85,7 +84,8 @@ func (s *Server) SshContext() (*SshContext) {
 func (s *Server) Run() error {
 	err := s.hs.Run()
 	if err != nil {
-		s.log.Error("Server run failed")
+		s.log.Error("Server run failed: ", err)
+		return err
 	}
 
 	return nil

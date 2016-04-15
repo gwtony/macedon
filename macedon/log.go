@@ -8,8 +8,6 @@ type Log struct {
 	l log4go.Logger
 }
 
-const DEFAULT_LOG_PATH = "../log/macedon.log"
-
 func GetLogger(path string, level string) *Log {
 	var log Log
 

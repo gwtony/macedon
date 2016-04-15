@@ -8,27 +8,10 @@ import (
 	goconf "github.com/msbranco/goconfig"
 )
 
-const DEFAULT_CONF_PATH         = "../conf"
-const DEFAULT_CONF              = "macedon.conf"
-
-const DEFAULT_CREATE_LOCATION   = "/create"
-const DEFAULT_DELETE_LOCATION   = "/delete"
-const DEFAULT_UPDATE_LOCATION   = "/update"
-const DEFAULT_READ_LOCATION     = "/read"
-const DEFAULT_NOTIFY_LOCATION   = "/notify"
-
-const DEFAULT_SSH_TIMEOUT       = 5
-
-
 type Config struct {
 	addr       string  /* server bind address */
 
 	location   string  /* handler location */
-
-	maddr      string  /* mysql addr */
-	dbname     string  /* db name */
-	dbuser     string  /* db username */
-	dbpwd      string  /* db password */
 
 	sport      string  /* ssh port */
 	suser      string  /* ssh user */
@@ -38,6 +21,12 @@ type Config struct {
 	ips        string  /* ip to purge */
 	cmd        string  /* purge command */
 	purgable   int     /* do purge or not */
+
+	caddr      string  /* consul server address */
+	reg_loc    string  /* register location */
+	dereg_loc  string  /* deregister location */
+	read_loc   string  /* read location */
+	domain     string  /* consul domain name */
 
 	log        string  /* log file */
 	level      string  /* log level */
@@ -54,7 +43,6 @@ func (conf *Config) ReadConf(file string) (*Config, error) {
 		return nil, err
 	}
 
-	//TODO: check
 	conf.addr, err = c.GetString("default", "addr")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "[Error] Read conf: No addr")
@@ -75,27 +63,6 @@ func (conf *Config) ReadConf(file string) (*Config, error) {
 	if err != nil {
 		conf.level = "error"
 		fmt.Fprintln(os.Stderr, "[Info] level not found, use default log level error")
-	}
-
-	conf.maddr, err = c.GetString("default", "mysql_addr")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "[Error] Read conf: No mysql_addr")
-		return nil, err
-	}
-	conf.dbname, err = c.GetString("default", "mysql_dbname")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "[Error] Read conf: No mysql_dbname")
-		return nil, err
-	}
-	conf.dbuser, err = c.GetString("default", "mysql_dbuser")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "[Error] Read conf: No mysql_dbuser")
-		return nil, err
-	}
-	conf.dbpwd, err = c.GetString("default", "mysql_dbpwd")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "[Error] Read conf: No mysql_dbpwd")
-		return nil, err
 	}
 
 	conf.sport, err = c.GetString("default", "ssh_port")
@@ -130,7 +97,31 @@ func (conf *Config) ReadConf(file string) (*Config, error) {
 		fmt.Fprintln(os.Stderr, "[Info] purge_cmd not found, do not purge")
 		conf.purgable = 0
 	}
-
+	conf.caddr, err = c.GetString("default", "consul_addrs")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Error] Read conf: no consul_addrs")
+		return nil, err
+	}
+	conf.reg_loc, err = c.GetString("default", "register_location")
+	if err != nil {
+		conf.reg_loc = DEFAULT_REGISTER_LOC
+		fmt.Fprintln(os.Stderr, "[Info] register_location not found, use default")
+	}
+	conf.dereg_loc, err = c.GetString("default", "deregister_location")
+	if err != nil {
+		conf.dereg_loc = DEFAULT_DEREGISTER_LOC
+		fmt.Fprintln(os.Stderr, "[Info] deregister_location not found, use default")
+	}
+	conf.read_loc, err = c.GetString("default", "read_location")
+	if err != nil {
+		conf.read_loc = DEFAULT_READ_LOC
+		fmt.Fprintln(os.Stderr, "[Info] read_location not found, use default")
+	}
+	conf.domain, err = c.GetString("default", "domain")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "[Error] Read conf: no domain")
+		return nil, err
+	}
 	return conf, nil
 }
 

@@ -1,22 +1,64 @@
 package macedon
 
 import (
+	"os"
 	"fmt"
 	"time"
+	. "github.com/mattn/go-getopt"
 )
 
+const (
+	DEFAULT_QUIT_WAIT_TIME = time.Millisecond * 200
+)
+
+func show_help() {
+	fmt.Println("%s [-f config_file | -v | -h]", os.Args[0])
+}
+
+func show_version() {
+	fmt.Println("Version: %s", VERSION)
+}
+
+func parse_option() {
+	var c int
+	OptErr = 0
+	for {
+		if c = Getopt("f:h:v"); c == EOF {
+			break
+		}
+		switch c {
+		case 'f':
+			config_file = OptArg
+			break
+		case 'h':
+			show_help()
+			os.Exit(0)
+			break
+		case 'v':
+			show_version()
+			os.Exit(0)
+			break
+		default:
+			fmt.Println("[Error] Invalid arguments")
+		}
+	}
+}
+
+var config_file string
+
+
 func Run() {
+	parse_option()
+
 	cconf := new(Config)
-	conf, err:= cconf.ReadConf("")
-	//conf, _:= cconf.ReadConf("../conf/macedon.conf")
+	conf, err:= cconf.ReadConf(config_file)
 	if err != nil {
-		fmt.Println(err)
-		time.Sleep(time.Second)
+		time.Sleep(DEFAULT_QUIT_WAIT_TIME)
 		return
 	}
 
 	if conf == nil {
-        fmt.Println("No conf")
+        fmt.Println("[Error] No conf")
         return
     }
 
@@ -25,9 +67,13 @@ func Run() {
     server, err := InitServer(conf, log)
     if err != nil {
         log.Error("Init server failed")
-		time.Sleep(time.Second)
+		time.Sleep(DEFAULT_QUIT_WAIT_TIME)
         return
     }
 
-    server.Run()
+    err = server.Run()
+	if err != nil {
+		time.Sleep(DEFAULT_QUIT_WAIT_TIME)
+		return
+	}
 }
