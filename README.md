@@ -1,12 +1,10 @@
 # macedon-go
 Description
 ===========
-Mysql api for powerdns
+Http api for consul
 * create a record
 * delete a record
-* update a record
 * read a record
-* notify zone update
 
 
 
@@ -16,10 +14,6 @@ Config Sample
 ```
 [default]
 addr: host:ip
-mysql_addr: mysql_host:3306
-mysql_dbname: dbname
-mysql_dbuser: dbuser
-mysql_dbpwd: dbpwd
 
 log: macedon.log
 level: debug
@@ -31,6 +25,9 @@ ssh_key: /username/.ssh/id_rsa
 ssh_port: 22
 ssh_user: username
 ssh_timeout: 20
+
+consul_addrs: consul_server
+domain: domain
 ```
 
 Schema
@@ -43,4 +40,4 @@ Dependency
 * [log4go](http://code.google.com/p/log4go)
 * [goconfig](https://github.com/msbranco/goconfig)
 * [golang/x/ssh](http://golang.org/x/crypto/ssh)
-* [go-sql-driver/mysql](http://github.com/go-sql-driver/mysql)
+* [mattn/go-getopt](http://github.com/mattn/go-getopt)
