@@ -208,10 +208,11 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		returnError(w, err, h.log)
 		return
 	}
+	h.log.Debug(name)
 	resps := &Response{}
 	for _, cresp := range *cresps {
 		resp := Request{}
-		resp.Name    = cresp.ServiceName
+		resp.Name    = data.Name
 		resp.Address = cresp.ServiceAddress
 		resp.Port    = cresp.ServicePort
 		*resps = append(*resps, resp)
