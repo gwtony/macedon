@@ -2,6 +2,7 @@ package macedon
 
 import (
 	"time"
+	"io/ioutil"
 	//"strings"
 )
 
@@ -48,7 +49,12 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 		}
 		s.pc = pc
 
-		sc, err := InitSshContext(conf.skey, conf.suser, time.Duration(conf.sto) * time.Second, s.log)
+		key, err := ioutil.ReadFile(conf.skey)
+		if err != nil {
+			s.log.Error("Read private key from %s failed", conf.skey)
+			return nil, err
+		}
+		sc, err := InitSshContext(string(key), conf.suser, time.Duration(conf.sto) * time.Second, s.log)
 		if err != nil {
 			s.log.Error("Init ssh context failed")
 			return nil, err

@@ -1,12 +1,11 @@
 package macedon
 
 import (
-	"golang.org/x/crypto/ssh"
-	"io/ioutil"
 	"net"
 	"time"
 	"sync"
 	"fmt"
+	"golang.org/x/crypto/ssh"
 )
 
 var DefaultTimeout = 5 * time.Second
@@ -30,17 +29,12 @@ type SshConn struct {
 	conn    *net.Conn
 }
 
-func InitSshContext(file string, user string, timeout time.Duration, log *Log) (*SshContext, error) {
+func InitSshContext(key string, user string, timeout time.Duration, log *Log) (*SshContext, error) {
 	sc := &SshContext{}
 
 	sc.log = log
 
-	key, err := ioutil.ReadFile(file)
-	if err != nil {
-		log.Error("Read private key from %s failed", file)
-		return nil, err
-	}
-	sc.key = string(key)
+	sc.key = key
 	sc.user = user
 
 	signer, err := ssh.ParsePrivateKey([]byte(sc.key))

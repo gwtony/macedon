@@ -1,11 +1,7 @@
 package macedon
 
 import (
-	"os"
-	"fmt"
 	"io"
-	"io/ioutil"
-	"path/filepath"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -16,21 +12,6 @@ func test_generate_rr(method, uri string, body io.Reader) (*httptest.ResponseRec
 	w := httptest.NewRecorder()
 	return w, r
 }
-
-var tempDir string
-func test_log_init() (* Log) {
-    tempDir, err := ioutil.TempDir("", "")
-    if err != nil {
-        fmt.Errorf("tempDir: %v", err)
-		return nil
-    }
-
-    path := filepath.Join(tempDir, "test.log")
-    log := GetLogger(path, "error")
-
-	return log
-}
-
 
 func test_check_return(w *httptest.ResponseRecorder, t *testing.T) {
 	if w.Code != 200 {
@@ -66,12 +47,12 @@ func test_check_return_502(w *httptest.ResponseRecorder, t *testing.T) {
 func Test_CreateHandler_ServeHTTP_Method(t *testing.T) {
 
 	w, r := test_generate_rr("POST", "/dns/create", nil)
-	log := test_log_init()
+	log := test_init_log()
 	if log == nil {
 		t.Fatal("init log failed")
 	}
 
-	defer os.RemoveAll(tempDir)
+	defer test_destroy_log()
 
 	handler := &CreateHandler{}
 	handler.log = log

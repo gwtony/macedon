@@ -39,7 +39,7 @@ func test_ReadConf(t *testing.T, data string) {
     defer os.RemoveAll(tempDir)
 
     path := filepath.Join(tempDir, "macedon.conf")
-    if err := ioutil.WriteFile(path, []byte(data), 0644); err != nil {
+    if err := ioutil.WriteFile(path, []byte(test_macedon_conf), 0644); err != nil {
         t.Fatalf("writeFile: %v", err)
     }
 

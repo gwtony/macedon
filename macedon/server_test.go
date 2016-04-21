@@ -1,9 +1,6 @@
 package macedon
 
 import (
-	"os"
-	"io/ioutil"
-	"path/filepath"
 	"testing"
 )
 
@@ -16,18 +13,15 @@ func Test_Server_1(t *testing.T) {
 				"172.30.19.33", "", "", "", "test.com",
 				"",
 				"",
-			}
-
-	tempDir, err := ioutil.TempDir("", "")
-	if err != nil {
-		t.Fatalf("tempDir: %v", err)
 	}
-	defer os.RemoveAll(tempDir)
 
-	path := filepath.Join(tempDir, "test.log")
-	log := GetLogger(path, "error")
+	log := test_init_log()
+	if log == nil {
+		t.Fatal("init log failed")
+	}
+	defer test_destroy_log()
 
-	_, err = InitServer(conf, log)
+	_, err := InitServer(conf, log)
 	if err != nil {
 		t.Error("Test server 1 failed!")
 	}
