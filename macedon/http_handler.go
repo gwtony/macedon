@@ -70,6 +70,12 @@ func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if req.Body == nil {
+		h.log.Error("Post body not existed")
+		http.Error(w, "Post body not existed", http.StatusBadRequest)
+		return
+	}
+
 	result, err:= ioutil.ReadAll(req.Body)
 	if err != nil {
 		h.log.Error("Read from request body failed")
@@ -115,6 +121,12 @@ func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if req.Method != "POST" {
 		h.log.Error("Method invalid: %s", req.Method)
 		http.Error(w, "Method invalid", http.StatusBadRequest)
+		return
+	}
+
+	if req.Body == nil {
+		h.log.Error("Post body not existed")
+		http.Error(w, "Post body not existed", http.StatusBadRequest)
 		return
 	}
 
@@ -168,6 +180,12 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if req.Method != "POST" {
 		h.log.Error("Method invalid: %s", req.Method)
 		http.Error(w, "Method invalid", http.StatusBadRequest)
+		return
+	}
+
+	if req.Body == nil {
+		h.log.Error("Post body not existed")
+		http.Error(w, "Post body not existed", http.StatusBadRequest)
 		return
 	}
 

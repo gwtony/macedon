@@ -1,6 +1,7 @@
 package macedon
 
 import (
+	"fmt"
 	"code.google.com/p/log4go"
 )
 
@@ -11,7 +12,9 @@ type Log struct {
 func GetLogger(path string, level string) *Log {
 	var log Log
 
+
 	if path == "" {
+		fmt.Println("path is ", path)
 		path = DEFAULT_LOG_PATH
 	}
 
@@ -25,7 +28,7 @@ func GetLogger(path string, level string) *Log {
 		lv = log4go.INFO
 	}
 
-	l := log4go.NewDefaultLogger(lv)
+	l := make(log4go.Logger)
 	flw := log4go.NewFileLogWriter(path, false)
 	flw.SetFormat("[%D %T] [%L] %M")
 	//flw.SetRotate(true)
