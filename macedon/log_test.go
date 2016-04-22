@@ -8,7 +8,7 @@ import (
 )
 
 var testTempDir string
-func test_init_log() (* Log) {
+func testInitlog() (* Log) {
     testTempDir, err := ioutil.TempDir("", "test_macedon_log")
     if err != nil {
         fmt.Errorf("tempDir: %v", err)
@@ -16,19 +16,23 @@ func test_init_log() (* Log) {
     }
 
     path := filepath.Join(testTempDir, "test.log")
-    log := GetLogger(path, "error")
+    log := GetLogger(path, "debug")
 
 	return log
 }
 
-func test_destroy_log() {
-	os.RemoveAll(testTempDir)
+func testDestroylog() {
+	if testTempDir == "" {
+		os.RemoveAll(testTempDir)
+	} else {
+		fmt.Println("temp dir is null")
+	}
 }
 
-func Test_Log(t *testing.T) {
-	log := test_init_log()
+func TestLog(t *testing.T) {
+	log := testInitlog()
 
-	defer test_destroy_log()
+	defer testDestroylog()
 	if log == nil {
 		t.Fatal("init log failed")
 	}

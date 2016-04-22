@@ -4,7 +4,7 @@ import (
 	"net"
 	"time"
 	"sync"
-	"fmt"
+	//"fmt"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -104,40 +104,40 @@ func (sconn *SshConn) SshExec(cmd string) ([]byte, error) {
 	return session.CombinedOutput(cmd)
 }
 
-func (sconn *SshConn) SshScp(data []byte, file string, path string, right string) error {
-	session, err := sconn.client.NewSession()
-	if err != nil {
-		return err
-	}
-
-	defer session.Close()
-
-	go func() {
-		w, _ := session.StdinPipe()
-		defer w.Close()
-
-		fmt.Fprintln(w, "C" + right, len(data), file) /* C is scp protocol */
-		fmt.Fprint(w, string(data))
-		fmt.Fprint(w, "\x00") /* End of transfer */
-	}()
-
-	cmd := DefaultScpCmd + path
-	err = session.Run(cmd)
-	if err != nil {
-		fmt.Println("Run scp failed", err)
-		return err
-	}
-
-	return nil
-}
-
-func (sconn *SshConn) sshLock() {
-	sconn.lock.Lock()
-}
-
-func (sconn *SshConn) sshUnlock() {
-	sconn.lock.Unlock()
-}
+//func (sconn *SshConn) SshScp(data []byte, file string, path string, right string) error {
+//	session, err := sconn.client.NewSession()
+//	if err != nil {
+//		return err
+//	}
+//
+//	defer session.Close()
+//
+//	go func() {
+//		w, _ := session.StdinPipe()
+//		defer w.Close()
+//
+//		fmt.Fprintln(w, "C" + right, len(data), file) /* C is scp protocol */
+//		fmt.Fprint(w, string(data))
+//		fmt.Fprint(w, "\x00") /* End of transfer */
+//	}()
+//
+//	cmd := DefaultScpCmd + path
+//	err = session.Run(cmd)
+//	if err != nil {
+//		fmt.Println("Run scp failed", err)
+//		return err
+//	}
+//
+//	return nil
+//}
+//
+//func (sconn *SshConn) sshLock() {
+//	sconn.lock.Lock()
+//}
+//
+//func (sconn *SshConn) sshUnlock() {
+//	sconn.lock.Unlock()
+//}
 
 func (sconn *SshConn) SshClose() {
 	(*sconn.conn).Close()

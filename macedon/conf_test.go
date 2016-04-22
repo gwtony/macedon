@@ -30,18 +30,19 @@ read_location: /v1/catalog/service/
 domain: lianjia.com
 `
 
-func test_ReadConf(t *testing.T, data string) {
+func testReadConf(t *testing.T, data string) {
 	conf := &Config{}
-    tempDir, err := ioutil.TempDir("", "")
-    if err != nil {
-        t.Fatalf("tempDir: %v", err)
-    }
-    defer os.RemoveAll(tempDir)
+	tempDir, err := ioutil.TempDir("", "test_log")
+	if err != nil {
+		t.Fatalf("tempDir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
 
-    path := filepath.Join(tempDir, "macedon.conf")
-    if err := ioutil.WriteFile(path, []byte(test_macedon_conf), 0644); err != nil {
-        t.Fatalf("writeFile: %v", err)
-    }
+	path := filepath.Join(tempDir, "test_conf")
+	err = ioutil.WriteFile(path, []byte(test_macedon_conf), 0644)
+	if err != nil {
+		t.Fatalf("writeFile: %v", err)
+	}
 
 	_, err = conf.ReadConf(path)
 	if err != nil {
@@ -50,6 +51,6 @@ func test_ReadConf(t *testing.T, data string) {
 	t.Log("Test read conf ok")
 }
 
-func Test_ReadConf(t *testing.T) {
-	test_ReadConf(t, test_macedon_conf)
+func TestReadConf(t *testing.T) {
+	testReadConf(t, test_macedon_conf)
 }

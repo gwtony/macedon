@@ -58,20 +58,20 @@ func Run() {
 	}
 
 	if conf == nil {
-        fmt.Println("[Error] No conf")
-        return
-    }
+		fmt.Println("[Error] No conf")
+		return
+	}
 
-    log := GetLogger(conf.log, conf.level)
+	log := GetLogger(conf.log, conf.level)
 
-    server, err := InitServer(conf, log)
-    if err != nil {
-        log.Error("Init server failed")
+	server, err := InitServer(conf, log)
+	if err != nil {
+		log.Error("Init server failed")
 		time.Sleep(DEFAULT_QUIT_WAIT_TIME)
-        return
-    }
+		return
+	}
 
-    err = server.Run()
+	err = server.Run()
 	if err != nil {
 		time.Sleep(DEFAULT_QUIT_WAIT_TIME)
 		return

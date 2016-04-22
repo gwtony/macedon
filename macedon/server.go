@@ -76,16 +76,16 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 	return s, nil
 }
 
-func (s *Server) HttpServer() (*HttpServer) {
-	return s.hs
-}
-
-func (s *Server) PurgeContext() (*PurgeContext) {
-	return s.pc
-}
-func (s *Server) SshContext() (*SshContext) {
-	return s.sc
-}
+//func (s *Server) HttpServer() (*HttpServer) {
+//	return s.hs
+//}
+//
+//func (s *Server) PurgeContext() (*PurgeContext) {
+//	return s.pc
+//}
+//func (s *Server) SshContext() (*SshContext) {
+//	return s.sc
+//}
 
 func (s *Server) Run() error {
 	err := s.hs.Run()

@@ -28,7 +28,10 @@ func GetLogger(path string, level string) *Log {
 		lv = log4go.INFO
 	}
 
-	l := make(log4go.Logger)
+	/* for test */
+	l := log4go.NewConsoleLogger(lv)
+
+	//l := make(log4go.Logger)
 	flw := log4go.NewFileLogWriter(path, false)
 	flw.SetFormat("[%D %T] [%L] %M")
 	//flw.SetRotate(true)

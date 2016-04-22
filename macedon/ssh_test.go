@@ -6,21 +6,74 @@ import (
 )
 
 const test_key string = `
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDW6jay6kk69YiCnAiKzVxwD+kgelOMEgAa2UNLuEwEMMN5WXYd1uZKQ2Wzju9FeIWeKXwITWk+K/y63LeUAJG1E0IBb+/OsdR/oh9VcYZEvGrGgPyuIHYFpF+2mm9vJby91xPT4z72Af/6BCQ0XL1OFQ4PV2EMCuNjE6IenGk1wuq2P4xaD3rWghM4m4w7TN5SJMuwtGXchYwZv3wKI70VlrEc/4FO1LqxMMJ8v350UNH3MWW5Nsq0N1kGujFjPnoC1LC97lMRtAWeiLAVyRPRlMHk7bSlXnuG7GnqkDMqzL6eARZvqWYEK7Ulz1ZMWHgjJzuwQj1FMouQcQDVWeRj root@cent7-dev
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEA2AdfHstIMKswqD908kefu9DNRoGLB+icW9rgE110Vffw1D1D
+F+3tv1Vb1LLlTKzkmjxDPTWRxTUG9HN4Xw+BZUVcyUhmH8jPlWCRDZejCuYH8r8o
+YYVp/DV5mY8dkFEUx86e0ipmSCFSw2+uGBjFpRBv8oUpWSZOysM36MK6qU1awGGF
+nt7LT32A2d2kUpESfUPWoHGyA0r4Ex55KlgY/KAy+pzfrdsw06rRmdIJgeAlRjpe
++IgGtdwGLPLttnFRlwhLPdzO+gZFAZe2QBjO8qciPInjhnEkD1sLBIpXgVxMDUWg
+ici/rL0MI1gaJ/mwlfoG4w1CQoHHovjCXoG9/wIBIwKCAQEAjfY3MX5FYc+VANk+
+OM/7QOhMYYhUDILqaD9gDLnBelJ5sAsANEvlYHnr44uAvVusKtck3xSS/e+lfBFd
+us+szYVaOyDypywwo/2hJjBydOBOXbDRZKghE3OZDSOIdMeRUBoQmLzG3vFTpQA/
+NGgM2i9fghz96iB866TbmPT+Uf5sQ6o0Af76aW8a6HgmRTyhO/nmE78zYbtGs8I9
+ktGXfIJSrwwT9i7HCqOERMTLXxyBug87KK+7ALI3NzmA77yW9DT8bigE8Df3BN9v
+sufmQJMXpLGS8Nr+Z7pRQvlR+3Yn4PqCcRNx+4pH5evuczAskX4cYRqq6sXZDfkS
+uKWXswKBgQD7fTK/g8wQsz+BOj/hcEdv6LY8PTO2JqyQaUp79c77JKjKYIwLOlqs
+mWV0Xxku9A9EbiHAUWA5VGybkZExBbj12vgT6Tamv2QSvhT2WpqgkGP+iZGpV1GW
+XzeYsZPChIZqn9q+kx9aCtdLJaTgeecCnScuGo1jIalRV2KqoVIp8wKBgQDb51hK
+cRRIreLWrSm1KwOiF+TM90eMR+WX5jH4jMSbfquGmtHtuhfxKhTh3TRXKZpeN2Wd
+rAYgHZfe7k0DnPJq5EUmgH+E41gpq2Zj1T6um9Kbi9O+wJqmYDRxGZFxRoZAkX5e
+P3WLqK8nDx+tbhdIwmDaHniug+4r/qvDmRIyxQKBgQD0TbxFA7BKvMFY9sG2bRIy
+MoUkkzmMYBVZFdNT2NeyI5ynVnlp/iwyo6RiawKFYh11rNBUbE7YmyetERCzR2M3
++UjC4ozcf2iHPE7gr8loxseJjPPmVNLp2NbsGjfERjlu5G4YNyXFLxpI//9Admth
+n/osyVYlyO2feXXKU5GlFwKBgQCQghVyv1Z450vsKKZhHEQ3UYe55FOWsudVMN8C
+ayIdChjyDfeq2WAww+HWQOfhgb02mW6pcQtW7uAkyHvAi7U+7ccKrDaKhsToLs5B
+msLKg6eoC23jwGWgiFz53ZoXPPkjHcgSDHHQze9xcFalKxadhwxyFAYpieWn4d6W
+eohNPwKBgCPZ2FOO10J8uCftGz4ld+JYQpNf9/FzSp7gEGTIH5E7zFaJT6Zm8P8L
+C+3q5Spf7w44TKJ959sMoR4ZprGCXWk9QEyMurXkx/guEsSgPHN5viQaiPv0Hghm
+KEICMCqKwlGFmoGDByechMcf0EXMrh8PGeHxh68sg0hdPhMqWj39
+-----END RSA PRIVATE KEY-----
 `
 
-func Test_InitSshContext_OK(t *testing.T) {
-	log := test_init_log()
+const test_key_bad string = `
+-----BEGIN RSA PRIVATE KEY-----
+GIIEowIBAAKCAQEA2AdfHstIMKswqD908kefu9DNRoGLB+icW9rgE110Vffw1D1D
+F+3tv1Vb1LLlTKzkmjxDPTWRxTUG9HN4Xw+BZUVcyUhmH8jPlWCRDZejCuYH8r8o
+YYVp/DV5mY8dkFEUx86e0ipmSCFSw2+uGBjFpRBv8oUpWSZOysM36MK6qU1awGGF
+nt7LT32A2d2kUpESfUPWoHGyA0r4Ex55KlgY/KAy+pzfrdsw06rRmdIJgeAlRjpe
++IgGtdwGLPLttnFRlwhLPdzO+gZFAZe2QBjO8qciPInjhnEkD1sLBIpXgVxMDUWg
+ici/rL0MI1gaJ/mwlfoG4w1CQoHHovjCXoG9/wIBIwKCAQEAjfY3MX5FYc+VANk+
+OM/7QOhMYYhUDILqaD9gDLnBelJ5sAsANEvlYHnr44uAvVusKtck3xSS/e+lfBFd
+us+szYVaOyDypywwo/2hJjBydOBOXbDRZKghE3OZDSOIdMeRUBoQmLzG3vFTpQA/
+NGgM2i9fghz96iB866TbmPT+Uf5sQ6o0Af76aW8a6HgmRTyhO/nmE78zYbtGs8I9
+ktGXfIJSrwwT9i7HCqOERMTLXxyBug87KK+7ALI3NzmA77yW9DT8bigE8Df3BN9v
+sufmQJMXpLGS8Nr+Z7pRQvlR+3Yn4PqCcRNx+4pH5evuczAskX4cYRqq6sXZDfkS
+uKWXswKBgQD7fTK/g8wQsz+BOj/hcEdv6LY8PTO2JqyQaUp79c77JKjKYIwLOlqs
+mWV0Xxku9A9EbiHAUWA5VGybkZExBbj12vgT6Tamv2QSvhT2WpqgkGP+iZGpV1GW
+XzeYsZPChIZqn9q+kx9aCtdLJaTgeecCnScuGo1jIalRV2KqoVIp8wKBgQDb51hK
+cRRIreLWrSm1KwOiF+TM90eMR+WX5jH4jMSbfquGmtHtuhfxKhTh3TRXKZpeN2Wd
+rAYgHZfe7k0DnPJq5EUmgH+E41gpq2Zj1T6um9Kbi9O+wJqmYDRxGZFxRoZAkX5e
+P3WLqK8nDx+tbhdIwmDaHniug+4r/qvDmRIyxQKBgQD0TbxFA7BKvMFY9sG2bRIy
+MoUkkzmMYBVZFdNT2NeyI5ynVnlp/iwyo6RiawKFYh11rNBUbE7YmyetERCzR2M3
++UjC4ozcf2iHPE7gr8loxseJjPPmVNLp2NbsGjfERjlu5G4YNyXFLxpI//9Admth
+n/osyVYlyO2feXXKU5GlFwKBgQCQghVyv1Z450vsKKZhHEQ3UYe55FOWsudVMN8C
+ayIdChjyDfeq2WAww+HWQOfhgb02mW6pcQtW7uAkyHvAi7U+7ccKrDaKhsToLs5B
+msLKg6eoC23jwGWgiFz53ZoXPPkjHcgSDHHQze9xcFalKxadhwxyFAYpieWn4d6W
+eohNPwKBgCPZ2FOO10J8uCftGz4ld+JYQpNf9/FzSp7gEGTIH5E7zFaJT6Zm8P8L
+C+3q5Spf7w44TKJ959sMoR4ZprGCXWk9QEyMurXkx/guEsSgPHN5viQaiPv0Hghm
+KEICMCqKwlGFmoGDByechMcf0EXMrh8PGeHxh68sg0hdPhMqWj39
+-----END RSA PRIVATE KEY-----
+`
+func TestInitSshContextOk(t *testing.T) {
+	log := testInitlog()
 	if log == nil {
 		t.Fatal("init log failed")
 	}
-	defer test_destroy_log()
+	defer testDestroylog()
 
-	InitSshContext(test_key, "root", time.Second * 5, log)
-	//sc, err := InitSshContext(test_key, "root", time.Second * 5, log)
-	//if err != nil {
-	//	//t.Fatal("init ssh context failed")
-	//	t.Log("init ssh context ok")
-	//}
-	//t.Log("init ssh context ok")
+	_, err := InitSshContext(test_key, "root", time.Second * 5, log)
+	if err != nil {
+		t.Fatal("init ssh context failed: ", err)
+	}
+	t.Log("init ssh context ok")
 }
