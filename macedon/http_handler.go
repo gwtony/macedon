@@ -139,7 +139,7 @@ func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	req.Body.Close()
 
 	data := &Request{}
-	json.Unmarshal(result, &data)
+	err = json.Unmarshal(result, &data)
 	if err != nil {
 		h.log.Error("Parse from request body failed")
 		http.Error(w, "Parse from body failed", http.StatusBadRequest)
@@ -198,7 +198,7 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	req.Body.Close()
 
 	data := &Request{}
-	json.Unmarshal(result, &data)
+	err = json.Unmarshal(result, &data)
 	if err != nil {
 		h.log.Error("Parse from request body failed")
 		http.Error(w, "Parse from body failed", http.StatusBadRequest)

@@ -2,7 +2,7 @@ package macedon
 
 import (
 	"os"
-	"fmt"
+	//"fmt"
 	"testing"
 	"io/ioutil"
 	"path/filepath"
@@ -27,18 +27,18 @@ func testGenerateKey() error {
 func testRemoveKey() {
 	if testKeyTempDir != "" {
 		os.RemoveAll(testKeyTempDir)
-	} else {
-		fmt.Println("key is null")
+	//} else {
+	//	fmt.Println("key is null")
 	}
 }
 
 func TestServerNotPurgeOk(t *testing.T) {
 	conf := &Config{
-				"172.30.19.33",
+				"192.168.0.1",
 				"/test",
 				"22", "root", "./id_isa.pub", 10,
 				"127.0.0.1", "echo", 0,
-				"172.30.19.33", "", "", "", "test.com",
+				"192.168.0.1", "", "", "", "test.com",
 				"",
 				"",
 	}

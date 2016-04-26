@@ -9,14 +9,14 @@ import (
 
 var testTempDir string
 func testInitlog() (* Log) {
-    testTempDir, err := ioutil.TempDir("", "test_macedon_log")
-    if err != nil {
-        fmt.Errorf("tempDir: %v", err)
+	testTempDir, err := ioutil.TempDir("", "test_macedon_log")
+	if err != nil {
+		fmt.Errorf("tempDir: %v", err)
 		return nil
-    }
+	}
 
-    path := filepath.Join(testTempDir, "test.log")
-    log := GetLogger(path, "debug")
+	path := filepath.Join(testTempDir, "test.log")
+	log := GetLogger(path, "debug")
 
 	return log
 }

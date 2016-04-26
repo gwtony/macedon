@@ -24,11 +24,17 @@ type ConsulContext struct {
 
 func InitConsulContext(addrs_str, reg_loc, dereg_loc, read_loc string, log *Log) (*ConsulContext, error) {
 	cc := &ConsulContext{}
+	var addrs []string
 
-	addrs := strings.Split(addrs_str, ",")
-	for i, addr := range addrs {
+	taddrs := strings.Split(addrs_str, ",")
+	for _, addr := range taddrs {
+		if addr == "" {
+			continue
+		}
 		if !strings.Contains(addr, ":") {
-			addrs[i] = addr + ":" + DEFAULT_CONSUL_API_PORT
+			addrs = append(addrs, addr + ":" + DEFAULT_CONSUL_API_PORT)
+		} else {
+			addrs = append(addrs, addr)
 		}
 	}
 
@@ -108,7 +114,10 @@ func (cc *ConsulContext) OperateService(name, addr, id string, op int) (*ConsulR
 			cc.log.Error("Read operate result body failed: ", err)
 			return nil, InternalServerError
 		}
-		if string(body) == "[]" { //TODO: better way
+
+		if len(body) == 0 ||
+			strings.EqualFold(string(body), "[]") ||
+			strings.EqualFold(string(body), "[]\n") { //TODO: better way
 			cc.log.Info("Service %s not found", name)
 			return nil, NoContentError
 		}

@@ -14,7 +14,7 @@ func GetLogger(path string, level string) *Log {
 
 
 	if path == "" {
-		fmt.Println("path is ", path)
+		fmt.Println("[Info] Use default log path:", DEFAULT_LOG_PATH)
 		path = DEFAULT_LOG_PATH
 	}
 
@@ -29,9 +29,9 @@ func GetLogger(path string, level string) *Log {
 	}
 
 	/* for test */
-	l := log4go.NewConsoleLogger(lv)
+	//l := log4go.NewConsoleLogger(lv)
 
-	//l := make(log4go.Logger)
+	l := make(log4go.Logger)
 	flw := log4go.NewFileLogWriter(path, false)
 	flw.SetFormat("[%D %T] [%L] %M")
 	//flw.SetRotate(true)

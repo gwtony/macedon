@@ -18,7 +18,12 @@ func InitPurgeContext(ips string, port string, cmd string, log *Log) (*PurgeCont
 
 	pc.log = log
 
-	pc.ips = strings.Split(ips, ",")
+	sips := strings.Split(ips, ",")
+	for _, ip := range sips {
+		if ip != "" {
+			pc.ips = append(pc.ips, ip)
+		}
+	}
 	pc.iplen = len(pc.ips)
 	if pc.iplen <= 0 {
 		pc.log.Error("Parse ips failed")

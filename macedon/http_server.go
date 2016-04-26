@@ -3,6 +3,7 @@ package macedon
 import (
 	//"fmt"
 	"time"
+	"strings"
 	"net/http"
 )
 
@@ -19,7 +20,7 @@ type HttpServer struct {
 	log         *Log
 }
 
-func InitHttpServer(addr string, log *Log) (*HttpServer, error) {
+func InitHttpServer(addr string, log *Log) (*HttpServer) {
 	hs := &HttpServer{}
 
 	hs.addr = addr
@@ -37,7 +38,7 @@ func InitHttpServer(addr string, log *Log) (*HttpServer, error) {
 	hs.reader.hs = hs
 	hs.reader.log = log
 
-	return hs, nil
+	return hs
 }
 
 func (hs *HttpServer) Run() error {
@@ -50,15 +51,17 @@ func (hs *HttpServer) Run() error {
 	return s.ListenAndServe()
 }
 
-func (hs *HttpServer) AddRouter(location string) error {
+func (hs *HttpServer) AddRouter(location string) {
 	hs.log.Debug("Add router %s", location)
 
-	//TODO: deal invalid location
+	if !strings.HasPrefix(location, "/") {
+		location = "/" + location
+	}
 	hs.location = location
 
 	http.Handle(location + DEFAULT_CREATE_LOCATION, hs.creater)
 	http.Handle(location + DEFAULT_DELETE_LOCATION, hs.deleter)
 	http.Handle(location + DEFAULT_READ_LOCATION, hs.reader)
 
-	return nil
+	return
 }

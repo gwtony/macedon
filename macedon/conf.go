@@ -39,10 +39,15 @@ func (conf *Config) ReadConf(file string) (*Config, error) {
 
 	c, err := goconf.ReadConfigFile(file)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "[Error] Read conf file %s failed", file)
+		fmt.Fprintf(os.Stderr, "[Error] Read conf file %s failed\n", file)
 		return nil, err
 	}
 
+	return conf.ParseConf(c)
+}
+
+func (conf *Config) ParseConf(c *goconf.ConfigFile) (*Config, error) {
+	var err error
 	conf.addr, err = c.GetString("default", "addr")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "[Error] Read conf: No addr")

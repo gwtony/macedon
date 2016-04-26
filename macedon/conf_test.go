@@ -30,6 +30,7 @@ read_location: /v1/catalog/service/
 domain: lianjia.com
 `
 
+
 func testReadConf(t *testing.T, data string) {
 	conf := &Config{}
 	tempDir, err := ioutil.TempDir("", "test_log")
@@ -46,11 +47,11 @@ func testReadConf(t *testing.T, data string) {
 
 	_, err = conf.ReadConf(path)
 	if err != nil {
-		t.Error("Test read conf failed")
+		t.Fatal("Test read conf failed")
 	}
 	t.Log("Test read conf ok")
 }
 
-func TestReadConf(t *testing.T) {
+func TestReadConfOk(t *testing.T) {
 	testReadConf(t, test_macedon_conf)
 }

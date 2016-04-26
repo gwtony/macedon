@@ -11,19 +11,20 @@ const (
 	DEFAULT_QUIT_WAIT_TIME = time.Millisecond * 200
 )
 
-func show_help() {
-	fmt.Println("%s [-f config_file | -v | -h]", os.Args[0])
+func ShowHelp() {
+	fmt.Printf("%s [-f config_file | -v | -h]\n", os.Args[0])
 }
 
-func show_version() {
-	fmt.Println("Version: %s", VERSION)
+func ShowVersion() {
+	fmt.Println("Version:", VERSION)
 }
 
-func parse_option() {
+func ParseOption() bool {
 	var c int
 	OptErr = 0
+	OptInd = 1
 	for {
-		if c = Getopt("f:h:v"); c == EOF {
+		if c = Getopt("f:hv"); c == EOF {
 			break
 		}
 		switch c {
@@ -31,24 +32,28 @@ func parse_option() {
 			config_file = OptArg
 			break
 		case 'h':
-			show_help()
-			os.Exit(0)
-			break
+			ShowHelp()
+			return false
 		case 'v':
-			show_version()
-			os.Exit(0)
-			break
+			ShowVersion()
+			return false
 		default:
 			fmt.Println("[Error] Invalid arguments")
+			return false
 		}
 	}
+
+	return true
 }
 
 var config_file string
 
 
 func Run() {
-	parse_option()
+	res := ParseOption()
+	if !res {
+		return
+	}
 
 	cconf := new(Config)
 	conf, err:= cconf.ReadConf(config_file)

@@ -3,7 +3,7 @@ package macedon
 import (
 	"time"
 	"io/ioutil"
-	//"strings"
+	"strings"
 )
 
 type Server struct {
@@ -22,24 +22,23 @@ type Server struct {
 func InitServer(conf *Config, log *Log) (*Server, error) {
 	s := &Server{}
 
-	s.log = log
-	s.addr = conf.addr
-
-	hs, err := InitHttpServer(conf.addr, s.log)
-	if err != nil {
-		s.log.Error("Init http server failed")
-		return nil, err
+	if conf.addr == "" {
+		return nil, BadConfigError
 	}
+	addr := conf.addr
+	if !strings.Contains(addr, ":") {
+		addr = addr + ":" + DEFAULT_HTTPSERVER_PORT
+	}
+	s.log = log
+	s.addr = addr
+
+	hs := InitHttpServer(s.addr, s.log)
 	s.hs = hs
 	hs.s = s
 
 	s.log.Debug("Init http server done")
 
-	err = hs.AddRouter(conf.location)
-	if err != nil {
-		s.log.Error("Server add router failed")
-		return nil, err
-	}
+	hs.AddRouter(conf.location)
 
 	if conf.purgable == 1 {
 		pc, err := InitPurgeContext(conf.ips, conf.sport, conf.cmd, s.log)
@@ -75,17 +74,6 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 
 	return s, nil
 }
-
-//func (s *Server) HttpServer() (*HttpServer) {
-//	return s.hs
-//}
-//
-//func (s *Server) PurgeContext() (*PurgeContext) {
-//	return s.pc
-//}
-//func (s *Server) SshContext() (*SshContext) {
-//	return s.sc
-//}
 
 func (s *Server) Run() error {
 	err := s.hs.Run()
