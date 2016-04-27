@@ -23,6 +23,7 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 	s := &Server{}
 
 	if conf.addr == "" {
+		log.Error("Empty server address")
 		return nil, BadConfigError
 	}
 	addr := conf.addr
@@ -38,6 +39,11 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 
 	s.log.Debug("Init http server done")
 
+	conf.location = strings.Trim(conf.location, " ")
+	if conf.location == "/" {
+		log.Error("Location invalid")
+		return nil, BadConfigError
+	}
 	hs.AddRouter(conf.location)
 
 	if conf.purgable == 1 {

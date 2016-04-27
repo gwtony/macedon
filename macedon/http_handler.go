@@ -96,7 +96,7 @@ func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	/* Check input */
 	if data.Name == "" || data.Address == "" {
 		h.log.Error("Post arguments invalid")
-		http.Error(w, "Name invalid", http.StatusBadRequest)
+		http.Error(w, "Name or Address invalid", http.StatusBadRequest)
 		return
 	}
 
