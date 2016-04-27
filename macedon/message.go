@@ -14,6 +14,7 @@ type ConsulRequest struct {
 	ID      string
 	Name    string
 	Address string
+	Tags    []string
 	Port    int
 }
 
@@ -24,6 +25,7 @@ type CResponse struct {
 	ServiceName    string
 	ServiceAddress string
 	ServicePort    int
+	ServiceTags    []string
 }
 
 type ConsulResponse []CResponse

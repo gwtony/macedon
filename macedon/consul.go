@@ -58,7 +58,7 @@ func (cc *ConsulContext) getServer() string {
 	//return cc.addrs[0]
 }
 
-func (cc *ConsulContext) OperateService(name, addr, id string, op int) (*ConsulResponse, error) {
+func (cc *ConsulContext) OperateService(name, addr, id, tags string, op int) (*ConsulResponse, error) {
 	var resp *http.Response
 
 	if op != READ && id == "" {
@@ -71,6 +71,9 @@ func (cc *ConsulContext) OperateService(name, addr, id string, op int) (*ConsulR
 	r.Name = name
 	r.Address = addr
 	r.ID = id
+	if tags != "" {
+		r.Tags = append(r.Tags, tags)
+	}
 
 	b, err := json.Marshal(r)
 	if err != nil {
@@ -133,19 +136,19 @@ func (cc *ConsulContext) OperateService(name, addr, id string, op int) (*ConsulR
 	return nil, nil
 }
 
-func (cc *ConsulContext) RegisterService(name, addr string) error {
+func (cc *ConsulContext) RegisterService(name, addr, tags string) error {
 	id := name + "_" + fmt.Sprint(time.Now().Unix())
-	_, err := cc.OperateService(name, addr, id, REGISTER)
+	_, err := cc.OperateService(name, addr, id, tags, REGISTER)
 	return err
 }
 
-func (cc *ConsulContext) DeRegisterService(name, addr string) error {
+func (cc *ConsulContext) DeRegisterService(name, addr, tags string) error {
 	found := true
 	if addr != "" {
 		found = false
 	}
 
-	resps, err := cc.OperateService(name, addr, "", READ)
+	resps, err := cc.OperateService(name, addr, "", tags, READ)
 	if err != nil {
 		cc.log.Error("Deregister service failed")
 		return err
@@ -158,13 +161,13 @@ func (cc *ConsulContext) DeRegisterService(name, addr string) error {
 		if addr != "" {
 			if strings.EqualFold(resp.ServiceAddress, addr) {
 				found = true
-				_, err = cc.OperateService(name, addr, resp.ServiceID, DEREGISTER)
+				_, err = cc.OperateService(name, addr, resp.ServiceID, tags, DEREGISTER)
 				if err != nil {
 					return err
 				}
 			}
 		} else {
-			_, err = cc.OperateService(name, addr, resp.ServiceID, DEREGISTER)
+			_, err = cc.OperateService(name, addr, resp.ServiceID, tags, DEREGISTER)
 			if err != nil {
 				return err
 			}
@@ -178,7 +181,56 @@ func (cc *ConsulContext) DeRegisterService(name, addr string) error {
 	return nil
 }
 
-func (cc *ConsulContext) ListService(name, addr string) (*ConsulResponse, error) {
-	return cc.OperateService(name, addr, "", READ)
-}
+func (cc *ConsulContext) ListService(name, addr, tags string) (*ConsulResponse, error) {
+	found := false
 
+	cc.log.Debug("In list service")
+	resps, err := cc.OperateService(name, addr, "", tags, READ)
+	if err != nil {
+		cc.log.Error("list service failed")
+		return nil, err
+	}
+
+	if len(*resps) == 0 {
+		cc.log.Info("Service %s not found", name)
+		return nil, NoContentError
+	}
+
+	cc.log.Debug("Deal operate service result")
+
+	if addr == "" && tags == "" {
+		return resps, err
+	}
+	ret := &ConsulResponse{}
+	for _, resp := range *resps {
+		amatch := false
+		tmatch := false
+		if addr != "" {
+			if strings.EqualFold(resp.ServiceAddress, addr) {
+				amatch = true
+			}
+		} else {
+			amatch = true
+		}
+		if tags != "" {
+			for _, stag := range resp.ServiceTags {
+				if strings.EqualFold(stag, tags) {
+					tmatch = true
+				}
+			}
+		} else {
+			tmatch = true
+		}
+		if amatch && tmatch {
+			*ret = append(*ret, resp)
+			found = true
+		}
+	}
+
+	if !found {
+		cc.log.Error("Not found service name: %s, addr: %s", name, addr)
+		return nil, NoContentError
+	}
+
+	return ret, nil
+}

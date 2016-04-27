@@ -64,6 +64,8 @@ func returnResponse(w http.ResponseWriter, resp *Response, log *Log) {
 }
 
 func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	var tags string = ""
+
 	if req.Method != "POST" {
 		h.log.Error("Method invalid: %s", req.Method)
 		http.Error(w, "Method invalid", http.StatusBadRequest)
@@ -107,7 +109,29 @@ func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	name := strings.TrimSuffix(data.Name, h.hs.s.domain)
 
-	err = h.hs.s.cc.RegisterService(name, data.Address)
+	if name == "." {
+		h.log.Error("Post arguments name invalid: no subname")
+		http.Error(w, "No name but only domain", http.StatusBadRequest)
+		return
+	}
+
+	/* Split name into name and tags */
+	if strings.Contains(name, ".") {
+		names := strings.Split(name, ".")
+		if len(names) < 2 {
+			h.log.Error("Post arguments subname invalid")
+			http.Error(w, "Subname invalid", http.StatusBadRequest)
+			return
+		}
+		name = names[len(names) - 1]
+		subnames := names[:len(names) - 1]
+		tags = names[0]
+		for _, v := range subnames[1:] {
+			tags = tags + "." + v
+		}
+	}
+
+	err = h.hs.s.cc.RegisterService(name, data.Address, tags)
 
 	if err != nil {
 		returnError(w, err, h.log)
@@ -118,6 +142,8 @@ func (h *CreateHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	var tags string = ""
+
 	if req.Method != "POST" {
 		h.log.Error("Method invalid: %s", req.Method)
 		http.Error(w, "Method invalid", http.StatusBadRequest)
@@ -161,7 +187,29 @@ func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	name := strings.TrimSuffix(data.Name, h.hs.s.domain)
 
-	err = h.hs.s.cc.DeRegisterService(name, data.Address)
+	if name == "." {
+		h.log.Error("Post arguments name invalid: no subname")
+		http.Error(w, "No name but only domain", http.StatusBadRequest)
+		return
+	}
+
+	/* Split name into name and tags */
+	if strings.Contains(name, ".") {
+		names := strings.Split(name, ".")
+		if len(names) < 2 {
+			h.log.Error("Post arguments subname invalid")
+			http.Error(w, "Subname invalid", http.StatusBadRequest)
+			return
+		}
+		name = names[len(names) - 1]
+		subnames := names[:len(names) - 1]
+		tags = names[0]
+		for _, v := range subnames[1:] {
+			tags = tags + "." + v
+		}
+	}
+
+	err = h.hs.s.cc.DeRegisterService(name, data.Address, tags)
 	if err != nil {
 		returnError(w, err, h.log)
 		return
@@ -177,6 +225,8 @@ func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	var tags string = ""
+
 	if req.Method != "POST" {
 		h.log.Error("Method invalid: %s", req.Method)
 		http.Error(w, "Method invalid", http.StatusBadRequest)
@@ -204,7 +254,7 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Parse from body failed", http.StatusBadRequest)
 		return
 	}
-	h.log.Info("Read record request from %s ", req.RemoteAddr, data)
+	h.log.Info("Read record request from %s %s", req.RemoteAddr, data)
 
 	/* Check input */
 	if data.Name == "" {
@@ -218,10 +268,32 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Domain in name invalid", http.StatusBadRequest)
 		return
 	}
+
 	name := strings.TrimSuffix(data.Name, h.hs.s.domain)
+	if name == "." {
+		h.log.Error("Post arguments name invalid: no subname")
+		http.Error(w, "No name but only domain", http.StatusBadRequest)
+		return
+	}
+
+	/* Split name into name and tags */
+	if strings.Contains(name, ".") {
+		names := strings.Split(name, ".")
+		if len(names) < 2 {
+			h.log.Error("Post arguments subname invalid")
+			http.Error(w, "Subname invalid", http.StatusBadRequest)
+			return
+		}
+		name = names[len(names) - 1]
+		subnames := names[:len(names) - 1]
+		tags = names[0]
+		for _, v := range subnames[1:] {
+			tags = tags + "." + v
+		}
+	}
 
 	//TODO: Deal wildcard */
-	cresps, err := h.hs.s.cc.ListService(name, data.Address)
+	cresps, err := h.hs.s.cc.ListService(name, data.Address, tags)
 	if err != nil {
 		returnError(w, err, h.log)
 		return
@@ -235,6 +307,5 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		resp.Port    = cresp.ServicePort
 		*resps = append(*resps, resp)
 	}
-
 	returnResponse(w, resps, h.log)
 }

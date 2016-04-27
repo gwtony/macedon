@@ -39,7 +39,7 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 
 	s.log.Debug("Init http server done")
 
-	conf.location = strings.Trim(conf.location, " ")
+	conf.location = strings.TrimSpace(conf.location)
 	if conf.location == "/" {
 		log.Error("Location invalid")
 		return nil, BadConfigError
