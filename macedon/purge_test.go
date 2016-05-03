@@ -19,7 +19,7 @@ func TestPurgeOk(t *testing.T) {
 		t.Fatal("init ssh context failed")
 	}
 	pc, err := InitPurgeContext("127.0.0.1", "22", "echo", log)
-	pc.DoPurge(sc)
+	pc.DoPurge(sc, "")
 
 	t.Log("purge ok")
 }

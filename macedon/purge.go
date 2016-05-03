@@ -37,7 +37,7 @@ func InitPurgeContext(ips string, port string, cmd string, log *Log) (*PurgeCont
 }
 
 /* Do not return any error */
-func (pc *PurgeContext) DoPurge(sc *SshContext) error {
+func (pc *PurgeContext) DoPurge(sc *SshContext, name string) error {
 	pc.log.Debug("Do purge")
 
 	ch := make(chan int, pc.iplen)
@@ -57,9 +57,9 @@ func (pc *PurgeContext) DoPurge(sc *SshContext) error {
 			defer sconn.SshClose()
 
 			/* Do not care purge result ? */
-			_, err = sconn.SshExec(pc.cmd)
+			_, err = sconn.SshExec(pc.cmd + " " + name)
 			if err != nil {
-				pc.log.Error("Execute %s in %s failed", pc.cmd, ip)
+				pc.log.Error("Execute %s in %s failed", pc.cmd + " " + name, ip)
 				return
 			}
 		}(host)

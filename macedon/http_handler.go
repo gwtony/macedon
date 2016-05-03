@@ -217,7 +217,7 @@ func (h *DeleteHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	go func() {
 		if h.hs.s.pc != nil {
-			go h.hs.s.pc.DoPurge(h.hs.s.sc)
+			go h.hs.s.pc.DoPurge(h.hs.s.sc, data.Name)
 		}
 	}()
 
