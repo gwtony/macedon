@@ -37,7 +37,7 @@ func TestRegisterServiceConnectConsulFailed(t *testing.T) {
 	defer testDestroylog()
 
 	cc := testCreateConsulContext(t, "127.0.0.1", log)
-	err := cc.RegisterService("test", "192.168.0.1")
+	err := cc.RegisterService("test", "192.168.0.1", "")
 	if err != nil && err == BadGatewayError {
 		t.Log("register service error badgateway")
 	}
@@ -51,7 +51,7 @@ func TestDeRegisterServiceConnectConsulFailed(t *testing.T) {
 	defer testDestroylog()
 
 	cc := testCreateConsulContext(t, "127.0.0.1", log)
-	err := cc.DeRegisterService("test", "192.168.0.1")
+	err := cc.DeRegisterService("test", "192.168.0.1", "")
 	if err != nil && err == BadGatewayError {
 		t.Log("register service error badgateway")
 	}
@@ -65,7 +65,7 @@ func TestListServiceConnectConsulFailed(t *testing.T) {
 	defer testDestroylog()
 
 	cc := testCreateConsulContext(t, "127.0.0.1", log)
-	_, err := cc.ListService("test", "192.168.0.1")
+	_, err := cc.ListService("test", "192.168.0.1", "")
 	if err != nil && err == BadGatewayError {
 		t.Log("register service error badgateway")
 	}
@@ -82,7 +82,7 @@ func TestListServiceEmptyResult(t *testing.T) {
 	defer ts.Close()
 
 	cc := testCreateConsulContext(t, strings.Trim(ts.URL, "http://"), log)
-	_, err := cc.ListService("test", "192.168.0.1")
+	_, err := cc.ListService("test", "192.168.0.1", "")
 	if err != nil && err == NoContentError {
 		t.Log("register service error NoContentError")
 	}
@@ -99,7 +99,7 @@ func TestListServiceFailedBadResponseJson(t *testing.T) {
 	defer ts.Close()
 
 	cc := testCreateConsulContext(t, strings.Trim(ts.URL, "http://"), log)
-	_, err := cc.ListService("test", "192.168.0.1")
+	_, err := cc.ListService("test", "192.168.0.1", "")
 	if err != nil && err == InternalServerError {
 		t.Log("register service error InternalServerError")
 	}
@@ -116,7 +116,7 @@ func TestDeRegisterServiceEmptyResult(t *testing.T) {
 	defer ts.Close()
 
 	cc := testCreateConsulContext(t, strings.Trim(ts.URL, "http://"), log)
-	err := cc.DeRegisterService("test", "192.168.0.1")
+	err := cc.DeRegisterService("test", "192.168.0.1", "")
 	if err != nil && err != NoContentError {
 		t.Fatal("deregister service error: ", err)
 	}
@@ -134,7 +134,7 @@ func TestDeRegisterServiceAddressNotMatch(t *testing.T) {
 	defer ts.Close()
 
 	cc := testCreateConsulContext(t, strings.Trim(ts.URL, "http://"), log)
-	err := cc.DeRegisterService("test", "192.168.0.2")
+	err := cc.DeRegisterService("test", "192.168.0.2", "")
 	if err != nil && err != NoContentError {
 		t.Fatal("deregister service error: ", err)
 	}
@@ -153,7 +153,7 @@ func TestDeRegisterServiceOk(t *testing.T) {
 	defer ts.Close()
 
 	cc := testCreateConsulContext(t, strings.Trim(ts.URL, "http://"), log)
-	err := cc.DeRegisterService("test", "192.168.0.1")
+	err := cc.DeRegisterService("test", "192.168.0.1", "")
 	if err != nil {
 		t.Fatal("deregister service error: ", err)
 	}
@@ -170,7 +170,7 @@ func TestDeRegisterServiceNameOnly(t *testing.T) {
 	defer ts.Close()
 
 	cc := testCreateConsulContext(t, strings.Trim(ts.URL, "http://"), log)
-	err := cc.DeRegisterService("test", "")
+	err := cc.DeRegisterService("test", "", "")
 	if err != nil {
 		t.Fatal("deregister service error: ", err)
 	}
@@ -189,7 +189,7 @@ func TestOperateServiceRegisterWithNoId(t *testing.T) {
 
 	cc := testCreateConsulContext(t, strings.Trim(ts.URL, "http://"), log)
 
-	_, err := cc.OperateService("test", "192.168.0.1", "", REGISTER)
+	_, err := cc.OperateService("test", "192.168.0.1", "", "", REGISTER)
 	if err != InternalServerError {
 		t.Fatal("operate service check error")
 	}
@@ -209,7 +209,7 @@ func TestOperateServiceEmptyResult(t *testing.T) {
 
 	cc := testCreateConsulContext(t, strings.Trim(ts.URL, "http://"), log)
 
-	_, err := cc.OperateService("test", "192.168.0.1", "", READ)
+	_, err := cc.OperateService("test", "192.168.0.1", "", "", READ)
 	if err == nil || err != NoContentError {
 		t.Fatal("operate service check error", err)
 	}
@@ -227,7 +227,7 @@ func TestOperateServiceBadHttpCode(t *testing.T) {
 	defer ts.Close()
 
 	cc := testCreateConsulContext(t, strings.Trim(ts.URL, "http://"), log)
-	_, err := cc.OperateService("test", "192.168.0.1", "1", REGISTER)
+	_, err := cc.OperateService("test", "192.168.0.1", "1", "", REGISTER)
 	if err != BadGatewayError {
 		t.Fatal("operate service check error", err)
 	}
@@ -245,7 +245,7 @@ func TestOperateServiceBadResponseJson(t *testing.T) {
 	defer ts.Close()
 
 	cc := testCreateConsulContext(t, strings.Trim(ts.URL, "http://"), log)
-	_, err := cc.OperateService("test", "192.168.0.1", "1", READ)
+	_, err := cc.OperateService("test", "192.168.0.1", "1", "", READ)
 	if err != InternalServerError {
 		t.Fatal("operate service check error", err)
 	}

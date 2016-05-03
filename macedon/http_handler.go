@@ -305,7 +305,7 @@ func (h *ReadHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		resp.Name    = data.Name
 		resp.Address = cresp.ServiceAddress
 		resp.Port    = cresp.ServicePort
-		*resps = append(*resps, resp)
+		resps.Result = append(resps.Result, resp)
 	}
 	returnResponse(w, resps, h.log)
 }

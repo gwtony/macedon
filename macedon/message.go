@@ -7,7 +7,9 @@ type Request struct {
 	Port        int
 }
 
-type Response []Request
+type Response struct {
+	Result []Request
+}
 
 /* Consul message struct */
 type ConsulRequest struct {
