@@ -28,6 +28,13 @@ consul_addrs: consul_server
 domain: domain
 ```
 
+Usage
+=====
+* -f config file
+* -h help
+* -v version
+* SIGHUP reload purge ips
+
 Schema
 =====
 * [schema infomation](SCHEMA.md)
