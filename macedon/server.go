@@ -1,7 +1,10 @@
 package macedon
 
 import (
+	"os"
 	"time"
+	"os/signal"
+	"syscall"
 	"io/ioutil"
 	"strings"
 )
@@ -81,7 +84,44 @@ func InitServer(conf *Config, log *Log) (*Server, error) {
 	return s, nil
 }
 
+func (s *Server)InitReload() {
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, syscall.SIGHUP)
+
+	for {
+		<-ch
+
+		rcconf := new(Config)
+		rconf, err:= rcconf.ReadConf(config_file)
+		if err != nil {
+			s.log.Error("Reload purge ips read conf failed")
+			continue
+		}
+
+		sips := strings.Split(rconf.ips, ",")
+		ips := []string{}
+		for _, ip := range sips {
+			if ip != "" {
+				ips = append(ips, ip)
+			}
+		}
+		iplen := len(ips)
+		if iplen <= 0 {
+			s.log.Error("Reload purge ips parse ips failed")
+			continue
+		}
+
+		s.pc.lock.Lock()
+		s.pc.ips = ips
+		s.pc.iplen = iplen
+		s.pc.lock.Unlock()
+		s.log.Debug("Reload done", s.pc.ips)
+	}
+}
+
 func (s *Server) Run() error {
+	go s.InitReload()
+
 	err := s.hs.Run()
 	if err != nil {
 		s.log.Error("Server run failed: ", err)

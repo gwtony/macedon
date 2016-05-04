@@ -1,12 +1,14 @@
 package macedon
 
 import (
+	"sync"
 	"strings"
 	"errors"
 )
 
 type PurgeContext struct {
 	ips     []string
+	lock    *sync.RWMutex
 	iplen   int
 	port    string
 	cmd     string
@@ -30,6 +32,8 @@ func InitPurgeContext(ips string, port string, cmd string, log *Log) (*PurgeCont
 		return nil, errors.New("Parse ips failed")
 	}
 
+	pc.lock = &sync.RWMutex{}
+
 	pc.port = port
 	pc.cmd = cmd
 
@@ -42,6 +46,7 @@ func (pc *PurgeContext) DoPurge(sc *SshContext, name string) error {
 
 	ch := make(chan int, pc.iplen)
 
+	pc.lock.RLock()
 	for _, host := range pc.ips {
 		pc.log.Debug("Purge ip: %s", host)
 
@@ -64,6 +69,7 @@ func (pc *PurgeContext) DoPurge(sc *SshContext, name string) error {
 			}
 		}(host)
 	}
+	pc.lock.RUnlock()
 
 	for i := 0; i < pc.iplen; i++ {
 		<-ch

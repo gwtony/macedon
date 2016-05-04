@@ -10,9 +10,9 @@ Request
 POST /macedon/create HTTP/1.1
 Content-Type: application/json
 {
-	"name": ${name},                 //service name
-	"address": ${address},           //address (May be A record or CNAME record)
-	"port": ${port}                  //port
+	"Name": ${name},                 //service name
+	"Address": ${address},           //address (May be A record or CNAME record)
+	"Port": ${port}                  //port
 }
 
 Response
@@ -24,9 +24,9 @@ Request
 POST /macedon/create HTTP/1.1
 Content-Type: application/json
 {
-	"name": "test.example.com",
-	"address": "192.168.0.2",
-	"port": "8080"
+	"Name": "test.example.com",
+	"Address": "192.168.0.2",
+	"Port": "8080"
 }
 
 CNAME:
@@ -34,8 +34,8 @@ Request
 POST /macedon/create HTTP/1.1
 Content-Type: application/json
 {
-	"name": "play.example.com",
-	"address": "test.example.com"
+	"Name": "play.example.com",
+	"Address": "test.example.com"
 }
 ```
 
@@ -46,8 +46,8 @@ Request
 POST /macedon/delete HTTP/1.1
 Content-Type: application/json
 {    
-	"name": ${name},      //${name} may be a service name
-	"address": ${address} //${address} is optional
+	"Name": ${name},      //${name} may be a service name
+	"Address": ${address} //${address} is optional
 }
 Response
 HTTP/1.1 200 OK
@@ -61,7 +61,7 @@ Request
 POST /macedon/delete HTTP/1.1
 Content-Type: application/json
 {
-	"name": "test.example.com",
+	"Name": "test.example.com",
 }
 
 Successful Response
@@ -76,20 +76,22 @@ Request
 POST /macedon/read HTTP/1.1
 Content-Type: application/json
 {
-	"name": ${name},      //service name
-	"address": ${address} //address is optional
+	"Name": ${name},      //service name
+	"Address": ${address} //address is optional
 }
 
 Response
 HTTP/1.1 200 OK
-[
-	{
-		"name": ${name},
-		"address": ${address},
-		"port": ${port}
-	},
-	{ ... }
-]
+{
+	"Result": [
+		{
+			"Name": ${name},
+			"Address": ${address},
+			"Port": ${port}
+		},
+		{ ... }
+	]
+}
 
 Response record not found
 Response
@@ -100,23 +102,25 @@ Request
 POST /macedon/read HTTP/1.1
 Content-Type: application/json
 {
-	"name": "test.example.com",
+	"Name": "test.example.com",
 }
 
 Response
 HTTP/1.1 200 OK
-[
-	{
-		"name": "test.example.com",
-		"address": "192.168.0.1",
-		"port": 80
-	},
-	{
-		"name": "test.example.com",
-		"address": "192.168.0.2",
-		"port": 81
-	}
-]
+{
+	"Result": [
+		{
+			"Name": "test.example.com",
+			"Address": "192.168.0.1",
+			"Port": 80
+		},
+		{
+			"Name": "test.example.com",
+			"Address": "192.168.0.2",
+			"Port": 81
+		}
+	]
+}
 ```
 
 Status Code 
