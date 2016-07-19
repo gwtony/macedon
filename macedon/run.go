@@ -78,6 +78,7 @@ func Run() {
 
 	err = server.Run()
 	if err != nil {
+		log.Error("Server run failed: ", err)
 		time.Sleep(DEFAULT_QUIT_WAIT_TIME)
 		return
 	}

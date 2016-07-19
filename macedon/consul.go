@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"bytes"
+	"strconv"
 	"strings"
 	"net/http"
 	"io/ioutil"
@@ -137,7 +138,7 @@ func (cc *ConsulContext) OperateService(name, addr, id, tags string, op int) (*C
 }
 
 func (cc *ConsulContext) RegisterService(name, addr, tags string) error {
-	id := name + "_" + fmt.Sprint(time.Now().Unix())
+	id := name + "_" + fmt.Sprint(time.Now().Unix()) + "_" + strconv.Itoa(rand.Intn(10000))
 	_, err := cc.OperateService(name, addr, id, tags, REGISTER)
 	return err
 }

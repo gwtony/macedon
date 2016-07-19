@@ -1,0 +1,71 @@
+[2016/07/14 18:07:35 CST] [DEBUG] Init http server done
+[2016/07/14 18:07:35 CST] [DEBUG] Add router /dns
+[2016/07/14 18:07:35 CST] [DEBUG] Consul context addrs is: %!(EXTRA []string=[10.10.8.76:8500])
+[2016/07/14 18:11:00 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.2 0})
+[2016/07/14 18:11:00 CST] [DEBUG] {"ID":"redis_1468491060","Name":"redis","Address":"1.1.2.2","Tags":["gwgw"],"Port":0}
+[2016/07/14 18:11:00 CST] [DEBUG] Return OK
+[2016/07/14 18:11:31 CST] [DEBUG] Init http server done
+[2016/07/14 18:11:31 CST] [DEBUG] Add router /dns
+[2016/07/14 18:11:31 CST] [DEBUG] Consul context addrs is: %!(EXTRA []string=[10.10.8.72:8500])
+[2016/07/14 18:11:36 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.3 0})
+[2016/07/14 18:11:36 CST] [DEBUG] {"ID":"redis_1468491096","Name":"redis","Address":"1.1.2.3","Tags":["gwgw"],"Port":0}
+[2016/07/14 18:11:36 CST] [DEBUG] Return OK
+[2016/07/14 18:11:45 CST] [DEBUG] Init http server done
+[2016/07/14 18:11:45 CST] [DEBUG] Add router /dns
+[2016/07/14 18:11:45 CST] [DEBUG] Consul context addrs is: %!(EXTRA []string=[10.10.8.73:8500])
+[2016/07/14 18:11:48 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.4 0})
+[2016/07/14 18:11:48 CST] [DEBUG] {"ID":"redis_1468491108","Name":"redis","Address":"1.1.2.4","Tags":["gwgw"],"Port":0}
+[2016/07/14 18:11:48 CST] [DEBUG] Return OK
+[2016/07/14 18:16:14 CST] [DEBUG] Init http server done
+[2016/07/14 18:16:14 CST] [DEBUG] Add router /dns
+[2016/07/14 18:16:14 CST] [DEBUG] Consul context addrs is: %!(EXTRA []string=[10.10.8.72:8500])
+[2016/07/14 18:16:20 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.7 0})
+[2016/07/14 18:16:20 CST] [DEBUG] {"ID":"redis_1468491380","Name":"redis","Address":"1.1.2.7","Tags":["gwgw"],"Port":0}
+[2016/07/14 18:16:20 CST] [DEBUG] Return OK
+[2016/07/14 18:20:03 CST] [DEBUG] Init http server done
+[2016/07/14 18:20:03 CST] [DEBUG] Add router /dns
+[2016/07/14 18:20:03 CST] [DEBUG] Consul context addrs is: %!(EXTRA []string=[10.10.8.76:8500])
+[2016/07/14 18:20:07 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.8 0})
+[2016/07/14 18:20:07 CST] [DEBUG] {"ID":"redis_1468491607","Name":"redis","Address":"1.1.2.8","Tags":["gwgw"],"Port":0}
+[2016/07/14 18:20:07 CST] [DEBUG] Return OK
+[2016/07/14 19:18:10 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.8 0})
+[2016/07/14 19:18:10 CST] [DEBUG] {"ID":"redis_1468495090","Name":"redis","Address":"1.1.2.8","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:18:10 CST] [DEBUG] Return OK
+[2016/07/14 19:18:11 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.8 0})
+[2016/07/14 19:18:11 CST] [DEBUG] {"ID":"redis_1468495091","Name":"redis","Address":"1.1.2.8","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:18:11 CST] [DEBUG] Return OK
+[2016/07/14 19:19:19 CST] [DEBUG] Init http server done
+[2016/07/14 19:19:19 CST] [DEBUG] Add router /dns
+[2016/07/14 19:19:19 CST] [DEBUG] Consul context addrs is: %!(EXTRA []string=[10.10.8.76:8500])
+[2016/07/14 19:19:20 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.7 0})
+[2016/07/14 19:19:20 CST] [DEBUG] {"ID":"redis_1468495160","Name":"redis","Address":"1.1.2.7","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:19:20 CST] [DEBUG] Return OK
+[2016/07/14 19:19:21 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.7 0})
+[2016/07/14 19:19:21 CST] [DEBUG] {"ID":"redis_1468495161","Name":"redis","Address":"1.1.2.7","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:19:21 CST] [DEBUG] Return OK
+[2016/07/14 19:19:22 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.7 0})
+[2016/07/14 19:19:22 CST] [DEBUG] {"ID":"redis_1468495162","Name":"redis","Address":"1.1.2.7","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:19:22 CST] [DEBUG] Return OK
+[2016/07/14 19:19:23 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.7 0})
+[2016/07/14 19:19:23 CST] [DEBUG] {"ID":"redis_1468495163","Name":"redis","Address":"1.1.2.7","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:19:23 CST] [DEBUG] Return OK
+[2016/07/14 19:19:23 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.7 0})
+[2016/07/14 19:19:23 CST] [DEBUG] {"ID":"redis_1468495163","Name":"redis","Address":"1.1.2.7","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:19:23 CST] [DEBUG] Return OK
+[2016/07/14 19:19:26 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.6 0})
+[2016/07/14 19:19:26 CST] [DEBUG] {"ID":"redis_1468495166","Name":"redis","Address":"1.1.2.6","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:19:26 CST] [DEBUG] Return OK
+[2016/07/14 19:19:28 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.5 0})
+[2016/07/14 19:19:28 CST] [DEBUG] {"ID":"redis_1468495168","Name":"redis","Address":"1.1.2.5","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:19:28 CST] [DEBUG] Return OK
+[2016/07/14 19:19:29 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.5 0})
+[2016/07/14 19:19:29 CST] [DEBUG] {"ID":"redis_1468495169","Name":"redis","Address":"1.1.2.5","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:19:30 CST] [DEBUG] Return OK
+[2016/07/14 19:19:30 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.5 0})
+[2016/07/14 19:19:30 CST] [DEBUG] {"ID":"redis_1468495170","Name":"redis","Address":"1.1.2.5","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:19:30 CST] [DEBUG] Return OK
+[2016/07/14 19:19:30 CST] [INFO] Create record request: %!(EXTRA *macedon.Request=&{gwgw.redis.service.ljnode.com 1.1.2.5 0})
+[2016/07/14 19:19:30 CST] [DEBUG] {"ID":"redis_1468495170","Name":"redis","Address":"1.1.2.5","Tags":["gwgw"],"Port":0}
+[2016/07/14 19:19:30 CST] [DEBUG] Return OK
+[2016/07/14 21:30:43 CST] [DEBUG] Reload done%!(EXTRA []string=[ip1 ip2 ip3])
+[2016/07/14 21:30:43 CST] [DEBUG] Reload done%!(EXTRA []string=[ip1 ip2 ip3])
