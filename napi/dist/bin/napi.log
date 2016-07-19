@@ -1,0 +1,129 @@
+[2016/07/12 16:44:43 CST] [DEBUG] Init http server done
+[2016/07/12 16:45:09 CST] [INFO] Read record request from 10.33.65.30:64072 %!(EXTRA *sample.SampleRequest=&{like {[] [] 0} { }  tj.lianjia.com })
+[2016/07/12 16:45:09 CST] [DEBUG] ReadByHost is%!(EXTRA string=select type, host, band, action_type, action_value, rule_id, product, expire from rules where host like ? and expire > ? and deleted = 0, string=%tj.lianjia.com%)
+[2016/07/12 16:45:09 CST] [ERROR] Scan no answer
+[2016/07/12 16:45:09 CST] [DEBUG] Request no content
+[2016/07/12 16:45:12 CST] [INFO] Read record request from 10.33.65.30:64072 %!(EXTRA *sample.SampleRequest=&{like {[] [] 0} { }  tj.lianjia.com })
+[2016/07/12 16:45:12 CST] [DEBUG] ReadByHost is%!(EXTRA string=select type, host, band, action_type, action_value, rule_id, product, expire from rules where host like ? and expire > ? and deleted = 0, string=%tj.lianjia.com%)
+[2016/07/12 16:45:12 CST] [ERROR] Scan no answer
+[2016/07/12 16:45:12 CST] [DEBUG] Request no content
+[2016/07/12 16:50:00 CST] [INFO] Create record request: %!(EXTRA *sample.SampleRequest=&{sample {[1] [nj.lianjia.com] 1468313715000} {insert_header sample:test_11}   test})
+[2016/07/12 16:50:00 CST] [INFO] host=nj.lianjia.com&band=1&expire=1468313715000&header=sample:test_11
+[2016/07/12 16:50:00 CST] [DEBUG] add rule args is %!(EXTRA string=host=nj.lianjia.com&band=1&expire=1468313715000&header=sample:test_11)
+[2016/07/12 16:50:00 CST] [DEBUG] Return OK
+[2016/07/12 16:50:00 CST] [INFO] Create record request: %!(EXTRA *sample.SampleRequest=&{sample {[2] [nj.lianjia.com] 1468313715000} {insert_header sample:controlled_11}   test})
+[2016/07/12 16:50:00 CST] [INFO] host=nj.lianjia.com&band=2&expire=1468313715000&header=sample:controlled_11
+[2016/07/12 16:50:00 CST] [DEBUG] add rule args is %!(EXTRA string=host=nj.lianjia.com&band=2&expire=1468313715000&header=sample:controlled_11)
+[2016/07/12 16:50:00 CST] [DEBUG] Return OK
+[2016/07/12 16:51:15 CST] [INFO] Read record request from 10.33.65.30:64228 %!(EXTRA *sample.SampleRequest=&{like {[] [] 0} { }  nj.lianjia.com })
+[2016/07/12 16:51:15 CST] [DEBUG] ReadByHost is%!(EXTRA string=select type, host, band, action_type, action_value, rule_id, product, expire from rules where host like ? and expire > ? and deleted = 0, string=%nj.lianjia.com%)
+[2016/07/12 16:51:15 CST] [DEBUG] [{sample {[1] [nj.lianjia.com] 2147483647} {insert_header sample:test_11}   test} {sample {[2] [nj.lianjia.com] 2147483647} {insert_header sample:controlled_11}   test}]
+[2016/07/12 16:51:15 CST] [DEBUG] Return OK
+[2016/07/12 16:55:14 CST] [INFO] Delete record request: %!(EXTRA *sample.SampleRequest=&{sample {[] [] 0} { } 40a98008-ce3e-4b89-8939-88d501f656f5  test})
+[2016/07/12 16:55:14 CST] [INFO] rule_id is %!(EXTRA string=40a98008-ce3e-4b89-8939-88d501f656f5)
+[2016/07/12 16:55:14 CST] [DEBUG] sql result is: %!(EXTRA string=sample, string=nj.lianjia.com, string=1, string=insert_header, string=sample:test_11, string=40a98008-ce3e-4b89-8939-88d501f656f5, string=test, int=2147483647)
+[2016/07/12 16:55:14 CST] [DEBUG] Query response is %!(EXTRA *sample.SampleRule=&{sample {[1] [nj.lianjia.com] 2147483647} {insert_header sample:test_11}   test})
+[2016/07/12 16:55:14 CST] [DEBUG] Get server result is: %!(EXTRA *sample.ServersResult=&[172.30.23.39:1222])
+[2016/07/12 16:55:14 CST] [INFO] host=nj.lianjia.com&band=1&expire=2147483647&header=sample:test_11
+[2016/07/12 16:55:14 CST] [DEBUG] delete rule args is %!(EXTRA string=host=nj.lianjia.com&band=1&expire=2147483647&header=sample:test_11)
+[2016/07/12 16:55:14 CST] [DEBUG] Return OK
+[2016/07/12 16:55:19 CST] [INFO] Delete record request: %!(EXTRA *sample.SampleRequest=&{sample {[] [] 0} { } 40a98008-ce3e-4b89-8939-88d501f656f5  test})
+[2016/07/12 16:55:19 CST] [INFO] rule_id is %!(EXTRA string=40a98008-ce3e-4b89-8939-88d501f656f5)
+[2016/07/12 16:55:19 CST] [DEBUG] sql result is: %!(EXTRA string=sample, string=nj.lianjia.com, string=1, string=insert_header, string=sample:test_11, string=40a98008-ce3e-4b89-8939-88d501f656f5, string=test, int=2147483647)
+[2016/07/12 16:55:19 CST] [DEBUG] Query response is %!(EXTRA *sample.SampleRule=&{sample {[1] [nj.lianjia.com] 2147483647} {insert_header sample:test_11}   test})
+[2016/07/12 16:55:19 CST] [DEBUG] Get server result is: %!(EXTRA *sample.ServersResult=&[172.30.23.39:1222])
+[2016/07/12 16:55:19 CST] [INFO] host=nj.lianjia.com&band=1&expire=2147483647&header=sample:test_11
+[2016/07/12 16:55:19 CST] [DEBUG] delete rule args is %!(EXTRA string=host=nj.lianjia.com&band=1&expire=2147483647&header=sample:test_11)
+[2016/07/12 16:55:19 CST] [ERROR] Opereate http status error: 507
+[2016/07/12 16:55:19 CST] [ERROR] Delete rule to 172.30.23.39:1222 failed, host: nj.lianjia.com, band: 1
+[2016/07/12 16:55:19 CST] [DEBUG] Return bad gateway
+[2016/07/12 16:55:19 CST] [INFO] Delete record request: %!(EXTRA *sample.SampleRequest=&{sample {[] [] 0} { } ba2cb1f5-b355-4476-b7e1-415a356a3f7c  test})
+[2016/07/12 16:55:19 CST] [INFO] rule_id is %!(EXTRA string=ba2cb1f5-b355-4476-b7e1-415a356a3f7c)
+[2016/07/12 16:55:19 CST] [DEBUG] sql result is: %!(EXTRA string=sample, string=nj.lianjia.com, string=2, string=insert_header, string=sample:controlled_11, string=ba2cb1f5-b355-4476-b7e1-415a356a3f7c, string=test, int=2147483647)
+[2016/07/12 16:55:19 CST] [DEBUG] Query response is %!(EXTRA *sample.SampleRule=&{sample {[2] [nj.lianjia.com] 2147483647} {insert_header sample:controlled_11}   test})
+[2016/07/12 16:55:19 CST] [DEBUG] Get server result is: %!(EXTRA *sample.ServersResult=&[172.30.23.39:1222])
+[2016/07/12 16:55:19 CST] [INFO] host=nj.lianjia.com&band=2&expire=2147483647&header=sample:controlled_11
+[2016/07/12 16:55:19 CST] [DEBUG] delete rule args is %!(EXTRA string=host=nj.lianjia.com&band=2&expire=2147483647&header=sample:controlled_11)
+[2016/07/12 16:55:19 CST] [DEBUG] Return OK
+[2016/07/12 16:55:24 CST] [INFO] Delete record request: %!(EXTRA *sample.SampleRequest=&{sample {[] [] 0} { } 40a98008-ce3e-4b89-8939-88d501f656f5  test})
+[2016/07/12 16:55:24 CST] [INFO] rule_id is %!(EXTRA string=40a98008-ce3e-4b89-8939-88d501f656f5)
+[2016/07/12 16:55:24 CST] [DEBUG] sql result is: %!(EXTRA string=sample, string=nj.lianjia.com, string=1, string=insert_header, string=sample:test_11, string=40a98008-ce3e-4b89-8939-88d501f656f5, string=test, int=2147483647)
+[2016/07/12 16:55:24 CST] [DEBUG] Query response is %!(EXTRA *sample.SampleRule=&{sample {[1] [nj.lianjia.com] 2147483647} {insert_header sample:test_11}   test})
+[2016/07/12 16:55:24 CST] [DEBUG] Get server result is: %!(EXTRA *sample.ServersResult=&[172.30.23.39:1222])
+[2016/07/12 16:55:24 CST] [INFO] host=nj.lianjia.com&band=1&expire=2147483647&header=sample:test_11
+[2016/07/12 16:55:24 CST] [DEBUG] delete rule args is %!(EXTRA string=host=nj.lianjia.com&band=1&expire=2147483647&header=sample:test_11)
+[2016/07/12 16:55:24 CST] [ERROR] Opereate http status error: 507
+[2016/07/12 16:55:24 CST] [ERROR] Delete rule to 172.30.23.39:1222 failed, host: nj.lianjia.com, band: 1
+[2016/07/12 16:55:24 CST] [DEBUG] Return bad gateway
+[2016/07/12 16:55:24 CST] [INFO] Delete record request: %!(EXTRA *sample.SampleRequest=&{sample {[] [] 0} { } ba2cb1f5-b355-4476-b7e1-415a356a3f7c  test})
+[2016/07/12 16:55:24 CST] [INFO] rule_id is %!(EXTRA string=ba2cb1f5-b355-4476-b7e1-415a356a3f7c)
+[2016/07/12 16:55:24 CST] [DEBUG] sql result is: %!(EXTRA string=sample, string=nj.lianjia.com, string=2, string=insert_header, string=sample:controlled_11, string=ba2cb1f5-b355-4476-b7e1-415a356a3f7c, string=test, int=2147483647)
+[2016/07/12 16:55:24 CST] [DEBUG] Query response is %!(EXTRA *sample.SampleRule=&{sample {[2] [nj.lianjia.com] 2147483647} {insert_header sample:controlled_11}   test})
+[2016/07/12 16:55:24 CST] [DEBUG] Get server result is: %!(EXTRA *sample.ServersResult=&[172.30.23.39:1222])
+[2016/07/12 16:55:24 CST] [INFO] host=nj.lianjia.com&band=2&expire=2147483647&header=sample:controlled_11
+[2016/07/12 16:55:24 CST] [DEBUG] delete rule args is %!(EXTRA string=host=nj.lianjia.com&band=2&expire=2147483647&header=sample:controlled_11)
+[2016/07/12 16:55:24 CST] [ERROR] Opereate http status error: 507
+[2016/07/12 16:55:24 CST] [ERROR] Delete rule to 172.30.23.39:1222 failed, host: nj.lianjia.com, band: 2
+[2016/07/12 16:55:24 CST] [DEBUG] Return bad gateway
+[2016/07/12 16:55:41 CST] [INFO] Read record request from 10.33.65.30:64331 %!(EXTRA *sample.SampleRequest=&{like {[] [] 0} { }  nj.lianjia.com })
+[2016/07/12 16:55:41 CST] [DEBUG] ReadByHost is%!(EXTRA string=select type, host, band, action_type, action_value, rule_id, product, expire from rules where host like ? and expire > ? and deleted = 0, string=%nj.lianjia.com%)
+[2016/07/12 16:55:41 CST] [ERROR] Scan no answer
+[2016/07/12 16:55:41 CST] [DEBUG] Request no content
+[2016/07/12 16:58:29 CST] [INFO] Create record request: %!(EXTRA *sample.SampleRequest=&{sample {[9] [hz.lianjia.com] 1469869021000} {insert_header sample:test_12}   test})
+[2016/07/12 16:58:34 CST] [INFO] host=hz.lianjia.com&band=9&expire=1469869021000&header=sample:test_12
+[2016/07/12 16:58:34 CST] [DEBUG] add rule args is %!(EXTRA string=host=hz.lianjia.com&band=9&expire=1469869021000&header=sample:test_12)
+[2016/07/12 16:58:34 CST] [DEBUG] Return OK
+[2016/07/12 16:58:34 CST] [INFO] Create record request: %!(EXTRA *sample.SampleRequest=&{sample {[10] [hz.lianjia.com] 1469869021000} {insert_header sample:controlled_12}   test})
+[2016/07/12 16:58:34 CST] [INFO] host=hz.lianjia.com&band=10&expire=1469869021000&header=sample:controlled_12
+[2016/07/12 16:58:34 CST] [DEBUG] add rule args is %!(EXTRA string=host=hz.lianjia.com&band=10&expire=1469869021000&header=sample:controlled_12)
+[2016/07/12 16:58:34 CST] [DEBUG] Return OK
+[2016/07/12 16:58:53 CST] [INFO] Read record request from 10.33.65.30:64394 %!(EXTRA *sample.SampleRequest=&{like {[] [] 0} { }  hz.lianjia.com })
+[2016/07/12 16:58:53 CST] [DEBUG] ReadByHost is%!(EXTRA string=select type, host, band, action_type, action_value, rule_id, product, expire from rules where host like ? and expire > ? and deleted = 0, string=%hz.lianjia.com%)
+[2016/07/12 16:58:53 CST] [DEBUG] [{sample {[9] [hz.lianjia.com] 2147483647} {insert_header sample:test_12}   test} {sample {[10] [hz.lianjia.com] 2147483647} {insert_header sample:controlled_12}   test}]
+[2016/07/12 16:58:53 CST] [DEBUG] Return OK
+[2016/07/12 17:01:08 CST] [INFO] Delete record request: %!(EXTRA *sample.SampleRequest=&{sample {[] [] 0} { } f0731824-1ca0-4e07-99b2-d6ce7eb679ca  test})
+[2016/07/12 17:01:08 CST] [INFO] rule_id is %!(EXTRA string=f0731824-1ca0-4e07-99b2-d6ce7eb679ca)
+[2016/07/12 17:01:08 CST] [DEBUG] sql result is: %!(EXTRA string=sample, string=hz.lianjia.com, string=9, string=insert_header, string=sample:test_12, string=f0731824-1ca0-4e07-99b2-d6ce7eb679ca, string=test, int=2147483647)
+[2016/07/12 17:01:08 CST] [DEBUG] Query response is %!(EXTRA *sample.SampleRule=&{sample {[9] [hz.lianjia.com] 2147483647} {insert_header sample:test_12}   test})
+[2016/07/12 17:01:08 CST] [DEBUG] Get server result is: %!(EXTRA *sample.ServersResult=&[172.30.23.39:1222])
+[2016/07/12 17:01:08 CST] [INFO] host=hz.lianjia.com&band=9&expire=2147483647&header=sample:test_12
+[2016/07/12 17:01:08 CST] [DEBUG] delete rule args is %!(EXTRA string=host=hz.lianjia.com&band=9&expire=2147483647&header=sample:test_12)
+[2016/07/12 17:01:08 CST] [DEBUG] Return OK
+[2016/07/12 17:01:09 CST] [INFO] Delete record request: %!(EXTRA *sample.SampleRequest=&{sample {[] [] 0} { } f0731824-1ca0-4e07-99b2-d6ce7eb679ca  test})
+[2016/07/12 17:01:09 CST] [INFO] rule_id is %!(EXTRA string=f0731824-1ca0-4e07-99b2-d6ce7eb679ca)
+[2016/07/12 17:01:09 CST] [DEBUG] sql result is: %!(EXTRA string=sample, string=hz.lianjia.com, string=9, string=insert_header, string=sample:test_12, string=f0731824-1ca0-4e07-99b2-d6ce7eb679ca, string=test, int=2147483647)
+[2016/07/12 17:01:09 CST] [DEBUG] Query response is %!(EXTRA *sample.SampleRule=&{sample {[9] [hz.lianjia.com] 2147483647} {insert_header sample:test_12}   test})
+[2016/07/12 17:01:09 CST] [DEBUG] Get server result is: %!(EXTRA *sample.ServersResult=&[172.30.23.39:1222])
+[2016/07/12 17:01:09 CST] [INFO] host=hz.lianjia.com&band=9&expire=2147483647&header=sample:test_12
+[2016/07/12 17:01:09 CST] [DEBUG] delete rule args is %!(EXTRA string=host=hz.lianjia.com&band=9&expire=2147483647&header=sample:test_12)
+[2016/07/12 17:01:09 CST] [ERROR] Opereate http status error: 507
+[2016/07/12 17:01:09 CST] [ERROR] Delete rule to 172.30.23.39:1222 failed, host: hz.lianjia.com, band: 9
+[2016/07/12 17:01:09 CST] [DEBUG] Return bad gateway
+[2016/07/12 17:01:09 CST] [INFO] Delete record request: %!(EXTRA *sample.SampleRequest=&{sample {[] [] 0} { } 178e205d-7a3b-42ee-ac1e-083de8ba15c0  test})
+[2016/07/12 17:01:09 CST] [INFO] rule_id is %!(EXTRA string=178e205d-7a3b-42ee-ac1e-083de8ba15c0)
+[2016/07/12 17:01:09 CST] [DEBUG] sql result is: %!(EXTRA string=sample, string=hz.lianjia.com, string=10, string=insert_header, string=sample:controlled_12, string=178e205d-7a3b-42ee-ac1e-083de8ba15c0, string=test, int=2147483647)
+[2016/07/12 17:01:09 CST] [DEBUG] Query response is %!(EXTRA *sample.SampleRule=&{sample {[10] [hz.lianjia.com] 2147483647} {insert_header sample:controlled_12}   test})
+[2016/07/12 17:01:09 CST] [DEBUG] Get server result is: %!(EXTRA *sample.ServersResult=&[172.30.23.39:1222])
+[2016/07/12 17:01:09 CST] [INFO] host=hz.lianjia.com&band=10&expire=2147483647&header=sample:controlled_12
+[2016/07/12 17:01:09 CST] [DEBUG] delete rule args is %!(EXTRA string=host=hz.lianjia.com&band=10&expire=2147483647&header=sample:controlled_12)
+[2016/07/12 17:01:09 CST] [DEBUG] Return OK
+[2016/07/12 17:01:14 CST] [INFO] Delete record request: %!(EXTRA *sample.SampleRequest=&{sample {[] [] 0} { } f0731824-1ca0-4e07-99b2-d6ce7eb679ca  test})
+[2016/07/12 17:01:14 CST] [INFO] rule_id is %!(EXTRA string=f0731824-1ca0-4e07-99b2-d6ce7eb679ca)
+[2016/07/12 17:01:14 CST] [DEBUG] sql result is: %!(EXTRA string=sample, string=hz.lianjia.com, string=9, string=insert_header, string=sample:test_12, string=f0731824-1ca0-4e07-99b2-d6ce7eb679ca, string=test, int=2147483647)
+[2016/07/12 17:01:14 CST] [DEBUG] Query response is %!(EXTRA *sample.SampleRule=&{sample {[9] [hz.lianjia.com] 2147483647} {insert_header sample:test_12}   test})
+[2016/07/12 17:01:14 CST] [DEBUG] Get server result is: %!(EXTRA *sample.ServersResult=&[172.30.23.39:1222])
+[2016/07/12 17:01:14 CST] [INFO] host=hz.lianjia.com&band=9&expire=2147483647&header=sample:test_12
+[2016/07/12 17:01:14 CST] [DEBUG] delete rule args is %!(EXTRA string=host=hz.lianjia.com&band=9&expire=2147483647&header=sample:test_12)
+[2016/07/12 17:01:14 CST] [ERROR] Opereate http status error: 507
+[2016/07/12 17:01:14 CST] [ERROR] Delete rule to 172.30.23.39:1222 failed, host: hz.lianjia.com, band: 9
+[2016/07/12 17:01:14 CST] [DEBUG] Return bad gateway
+[2016/07/12 17:01:14 CST] [INFO] Delete record request: %!(EXTRA *sample.SampleRequest=&{sample {[] [] 0} { } 178e205d-7a3b-42ee-ac1e-083de8ba15c0  test})
+[2016/07/12 17:01:14 CST] [INFO] rule_id is %!(EXTRA string=178e205d-7a3b-42ee-ac1e-083de8ba15c0)
+[2016/07/12 17:01:14 CST] [DEBUG] sql result is: %!(EXTRA string=sample, string=hz.lianjia.com, string=10, string=insert_header, string=sample:controlled_12, string=178e205d-7a3b-42ee-ac1e-083de8ba15c0, string=test, int=2147483647)
+[2016/07/12 17:01:14 CST] [DEBUG] Query response is %!(EXTRA *sample.SampleRule=&{sample {[10] [hz.lianjia.com] 2147483647} {insert_header sample:controlled_12}   test})
+[2016/07/12 17:01:14 CST] [DEBUG] Get server result is: %!(EXTRA *sample.ServersResult=&[172.30.23.39:1222])
+[2016/07/12 17:01:14 CST] [INFO] host=hz.lianjia.com&band=10&expire=2147483647&header=sample:controlled_12
+[2016/07/12 17:01:14 CST] [DEBUG] delete rule args is %!(EXTRA string=host=hz.lianjia.com&band=10&expire=2147483647&header=sample:controlled_12)
+[2016/07/12 17:01:14 CST] [ERROR] Opereate http status error: 507
+[2016/07/12 17:01:14 CST] [ERROR] Delete rule to 172.30.23.39:1222 failed, host: hz.lianjia.com, band: 10
+[2016/07/12 17:01:14 CST] [DEBUG] Return bad gateway
