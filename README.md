@@ -1,7 +1,7 @@
 # macedon-go
 Description
 ===========
-Http (with purge dns) api for consul
+Http (with purge dns) api for etcd
 * create a record
 * delete a record
 * read a record
@@ -13,19 +13,14 @@ Config Sample
 [default]
 addr: host:ip
 
-log: macedon.log
+log: ../log/macedon.log
 level: debug
 
-location: /dns
-purge_ips: "192.168.0.1"
-purge_cmd: "purge dns"
-ssh_key: /username/.ssh/id_rsa
-ssh_port: 22
-ssh_user: username
-ssh_timeout: 20
-
-consul_addrs: consul_server
+[macedon]
+etcd_addr: 1.1.1.1:2379,1.1.1.2:2379,1.1.1.3:2379
+api_location: /macedon
 domain: domain
+token: some_token
 ```
 
 Usage
@@ -33,7 +28,6 @@ Usage
 * -f config file
 * -h help
 * -v version
-* SIGHUP reload purge ips
 
 Schema
 =====
@@ -44,5 +38,4 @@ Dependency
 
 * [log4go](http://code.google.com/p/log4go)
 * [goconfig](https://github.com/msbranco/goconfig)
-* [golang/x/ssh](http://golang.org/x/crypto/ssh)
-* [mattn/go-getopt](http://github.com/mattn/go-getopt)
+* [gapi](http://github.com/gwtony/gapi)
