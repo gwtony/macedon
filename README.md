@@ -1,4 +1,4 @@
-# macedon-go
+# macedon
 Description
 ===========
 Http (with purge dns) api for etcd
