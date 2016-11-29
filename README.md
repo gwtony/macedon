@@ -6,6 +6,10 @@ Http (with purge dns) api for etcd
 * delete a record
 * read a record
 
+Installation
+============
+make
+
 Config Sample
 =============
 
