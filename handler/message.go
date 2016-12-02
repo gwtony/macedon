@@ -1,4 +1,4 @@
-package macedon
+package handler
 
 // MacedonRequest is Macedon request
 type MacedonRequest struct {

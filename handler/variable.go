@@ -1,4 +1,4 @@
-package macedon
+package handler
 
 const (
 	// VERSION version

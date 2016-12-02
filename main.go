@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gwtony/gapi/api"
-	"github.com/gwtony/macedon"
+	"github.com/gwtony/macedon/handler"
 )
 
 func main() {
@@ -15,7 +15,7 @@ func main() {
 	config := api.GetConfig()
 	log := api.GetLog()
 
-	err = macedon.InitContext(config, log)
+	err = handler.InitContext(config, log)
 	if err != nil {
 		fmt.Println("Init Macedon failed")
 	}
