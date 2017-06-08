@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	err := api.Init()
+	err := api.Init("macedon.conf")
 	if err != nil {
 		fmt.Println("Init api failed")
 		return

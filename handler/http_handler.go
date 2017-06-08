@@ -33,6 +33,14 @@ type DeleteHandler struct {
 	log    log.Log
 }
 
+// UpdateHandler Update record handler
+type UpdateHandler struct {
+	h      *Handler
+	domain string
+	token  string
+	pc     *PurgeContext
+	log    log.Log
+}
 // ReadHandler Read record handler
 type ReadHandler struct {
 	h      *Handler
@@ -86,7 +94,7 @@ func splitReverse(str, sep string) []string {
 
 // ServeHTTP router interface
 func (handler *AddHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var isArpa bool
+	var isArpa, isCname bool
 	var arr []string
 	log := handler.log
 
@@ -134,6 +142,11 @@ func (handler *AddHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		isArpa = true
 	}
 
+	isCname = true
+	if net.ParseIP(data.Address) != nil {
+		isCname = false
+	}
+
 	if isArpa {
 		/* 10.1.1.2 to 10/1/1/2 */
 		arr = strings.Split(data.Name, ".")
@@ -150,6 +163,12 @@ func (handler *AddHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check exists record
+	if isCname == true && resp != nil { //add a cname
+		hserver.ReturnError(r, w, errors.Jerror("Existed cname, cannot add"), errors.ConflictError, log)
+		return
+	}
+
+	// add a A record
 	if resp != nil {
 		exist := false
 		if len(resp.Node.Nodes) > 0 {
@@ -157,6 +176,9 @@ func (handler *AddHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			for _, v := range resp.Node.Nodes {
 				json.Unmarshal([]byte(v.Value), &respRec)
 				if strings.Compare(respRec.Host, data.Address) == 0 {
+					exist = true
+					break
+				} else if net.ParseIP(respRec.Host) == nil { //exist cname
 					exist = true
 					break
 				}
@@ -167,6 +189,8 @@ func (handler *AddHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				json.Unmarshal([]byte(resp.Node.Value), &respRec)
 				if strings.Compare(respRec.Host, data.Address) == 0 {
 					exist = true
+				} else if net.ParseIP(respRec.Host) == nil { //exist cname
+					exist = true
 				}
 			}
 		}
@@ -176,8 +200,10 @@ func (handler *AddHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	// one arpa record should only match to one domain name, one to multi not supported by skydns
-	if !isArpa {
+	/* one arpa record should only match to one domain name, one to multi not supported by skydns
+	 * one cname record should only match to one domain name
+	 */
+	if !isArpa && !isCname {
 		rec = rec + "/" + fmt.Sprint(time.Now().Unix()) + "_" + strconv.Itoa(rand.Intn(10000))
 	}
 
@@ -306,6 +332,136 @@ func (handler *DeleteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	api.ReturnResponse(r, w, "", log)
 }
 
+// ServeHTTP router interface
+func (handler *UpdateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var isArpa bool
+	var arr []string
+	log := handler.log
+
+	if r.Method != "POST" {
+		hserver.ReturnError(r, w, errors.Jerror("Method invalid"), errors.BadRequestError, log)
+		return
+	}
+
+	result, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		hserver.ReturnError(r, w, errors.Jerror("Read from body failed"), errors.BadRequestError, log)
+		return
+	}
+	r.Body.Close()
+
+	data := &MacedonUpdateRequest{}
+	err = json.Unmarshal(result, &data)
+	if err != nil {
+		hserver.ReturnError(r, w, errors.Jerror("Parse from body failed"), errors.BadRequestError, log)
+		return
+	}
+	handler.log.Info("Update record request: (%s) from client: %s", data, r.RemoteAddr)
+
+	if handler.token != "" && strings.Compare(data.Token, handler.token) != 0 {
+		hserver.ReturnError(r, w, errors.Jerror("Token invalid"), errors.ForbiddenError, log)
+		return
+	}
+	/* Check input */
+	if data.Name == "" || data.Address == "" {
+		hserver.ReturnError(r, w, errors.Jerror("Name or address invalid"), errors.BadRequestError, log)
+		return
+	}
+	if data.Ttl <= 0 {
+		data.Ttl = DEFAULT_TTL
+	}
+	if data.Old == "" {
+		hserver.ReturnError(r, w, errors.Jerror("Old address invalid"), errors.BadRequestError, log)
+		return
+	}
+
+	if !(strings.HasSuffix(data.Name, handler.domain) || net.ParseIP(data.Name) != nil) {
+		hserver.ReturnError(r, w, errors.Jerror("Name invalid"), errors.BadRequestError, log)
+		return
+	}
+
+	isArpa = false
+	if net.ParseIP(data.Name) != nil {
+		isArpa = true
+	}
+
+	if isArpa {
+		/* 10.1.1.2 to 10/1/1/2 */
+		arr = strings.Split(data.Name, ".")
+	} else {
+		/* "name1.domain.com" to "com/domain/name1" */
+		arr = splitReverse(data.Name, ".")
+	}
+	rec := strings.Join(arr, "/")
+
+	resp, err := handler.h.Read(rec, isArpa, false, false)
+	if err != nil {
+		if err == errors.NoContentError {
+			handler.log.Debug("Update read resp is nil")
+			hserver.ReturnError(r, w, errors.Jerror("No record found"), err, log)
+		} else {
+			hserver.ReturnError(r, w, errors.Jerror("Read record failed"), err, log)
+		}
+		return
+	}
+	if resp == nil {
+		handler.log.Debug("Update resp is nil")
+		hserver.ReturnError(r, w, errors.Jerror("Record not found"), errors.NoContentError, log)
+		return
+	}
+
+	var found, foundv []string
+
+	if len(resp.Node.Nodes) > 0 {
+		respRec := &RecValue{}
+		for _, v := range resp.Node.Nodes {
+			json.Unmarshal([]byte(v.Value), &respRec)
+			if strings.Compare(respRec.Host, data.Old) == 0 {
+				if isArpa {
+					found = append(found, strings.TrimPrefix(v.Key, DEFAULT_TRIM_ARPA_KEY))
+					foundv = append(foundv, v.Value)
+				} else {
+					found = append(found, strings.TrimPrefix(v.Key, DEFAULT_TRIM_KEY))
+					foundv = append(foundv, v.Value)
+				}
+			}
+		}
+	} else {
+		if resp.Node.Value != "" {
+			respRec := RecValue{}
+			json.Unmarshal([]byte(resp.Node.Value), &respRec)
+			if strings.Compare(respRec.Host, data.Old) == 0 {
+				if isArpa {
+					found = append(found, strings.TrimPrefix(resp.Node.Key, DEFAULT_TRIM_ARPA_KEY))
+					foundv = append(foundv, resp.Node.Value)
+				} else {
+					found = append(found, strings.TrimPrefix(resp.Node.Key, DEFAULT_TRIM_KEY))
+					foundv = append(foundv, resp.Node.Value)
+				}
+			}
+		}
+	}
+
+	if len(found) == 0 {
+		handler.log.Debug("found is nul")
+		hserver.ReturnError(r, w, errors.Jerror("No record found"), errors.NoContentError, log)
+		return
+	}
+
+	for i, v := range found {
+		//_, err = handler.h.Delete(v, isArpa, false)
+		_, err = handler.h.Update(v, data.Address, data.Ttl, foundv[i], isArpa)
+		if err != nil {
+			hserver.ReturnError(r, w, errors.Jerror("Update record failed"), err, log)
+			return
+		}
+	}
+
+	go handler.pc.DoPurge(data.Name)
+
+	hserver.ReturnResponse(r, w, "", log)
+}
+
 // parseResponse Parse etcd response to macedon response
 func parseResponse(key string, n *Node, mresp *MacedonResponse) {
 	if n.Dir {
@@ -317,7 +473,14 @@ func parseResponse(key string, n *Node, mresp *MacedonResponse) {
 		json.Unmarshal([]byte(n.Value), &respRec)
 		r := MacedonResponseRecord{}
 		rkey := splitReverse(n.Key, "/")
-		r.Name = strings.Join(rkey[1: len(rkey) - 2], ".") // Get real domain name
+		if net.ParseIP(respRec.Host) != nil {
+			// ignore random key
+			r.Name = strings.Join(rkey[1: len(rkey) - 2], ".")
+		} else {
+			//arpa or cname no random key
+			r.Name = strings.Join(rkey[0: len(rkey) - 2], ".")
+		}
+		//r.Name = strings.Join(rkey[1: len(rkey) - 2], ".") // Get real domain name
 		r.Address = respRec.Host
 		r.Ttl = respRec.Ttl
 		mresp.Result = append(mresp.Result, r)
@@ -400,7 +563,14 @@ func (handler *ReadHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			json.Unmarshal([]byte(resp.Node.Value), &respRec)
 			r := MacedonResponseRecord{}
 			rkey := splitReverse(resp.Node.Key, "/")
-			r.Name = strings.Join(rkey[1: len(rkey) - 2], ".")
+			if net.ParseIP(respRec.Host) != nil {
+				// ignore random key
+				r.Name = strings.Join(rkey[1: len(rkey) - 2], ".")
+			} else {
+				//arpa or cname no random key
+				r.Name = strings.Join(rkey[0: len(rkey) - 2], ".")
+			}
+			//r.Name = strings.Join(rkey[1: len(rkey) - 2], ".")
 			r.Address = respRec.Host
 			r.Ttl = respRec.Ttl
 			mresp.Result = append(mresp.Result, r)
@@ -696,6 +866,9 @@ func (handler *DeleteServerHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 	if len(resp.Node.Nodes) > 0 {
 		respRec := &RecValue{}
 		for _, v := range resp.Node.Nodes {
+			if v.Value == "" {
+				continue
+			}
 			json.Unmarshal([]byte(v.Value), &respRec)
 			if strings.Compare(respRec.Host, data.Address) == 0 {
 				found = append(found, strings.TrimPrefix(v.Key, DEFAULT_TRIM_SERVER_KEY))

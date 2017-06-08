@@ -2,6 +2,7 @@ package handler
 
 import (
 	//"fmt"
+	"time"
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
@@ -32,7 +33,8 @@ func InitHandler(eaddr []string, loc string, log log.Log) *Handler {
 }
 
 // Operate operates etcd
-func (h *Handler) Operate(loc, args string, op int, arpa, server, scan bool) (*EtcdResponse, error) {
+//func (h *Handler) Operate(loc, args string, op int, arpa, server, scan bool) (*EtcdResponse, error) {
+func (h *Handler) Operate(loc, args, old string, op int, arpa, server, scan bool) (*EtcdResponse, error) {
 	var err error
 	var floc string
 	var resp *http.Response
@@ -57,9 +59,10 @@ next:
 		h.log.Debug("add url is %s", floc)
 		req, _ := http.NewRequest("PUT", floc , data)
 		req.Header.Set(CONTENT_HEADER, ETCD_CONTENT_HEADER)
-		client := &http.Client{}
+		client := &http.Client{
+			Timeout: time.Duration(DEFAULT_ETCD_TIMEOUT * time.Second),
+		}
 		resp, err = client.Do(req)
-		break
 	case DELETE:
 		if arpa {
 			floc = "http://" + h.eaddr[retry] + DEFAULT_ARPA_LOC + loc
@@ -72,9 +75,27 @@ next:
 		h.log.Debug("del url is %s", floc)
 		req, _ := http.NewRequest("DELETE", floc, nil)
 		req.Header.Set(CONTENT_HEADER, ETCD_CONTENT_HEADER)
-		client := &http.Client{}
+		client := &http.Client{
+			Timeout: time.Duration(DEFAULT_ETCD_TIMEOUT * time.Second),
+		}
 		resp, err = client.Do(req)
-		break
+	case UPDATE:
+		h.log.Debug("update record args is %s", args)
+		val := &url.Values{}
+		val.Add("value", args)
+		data := bytes.NewBufferString(val.Encode())
+		if arpa {
+			floc = "http://" + h.eaddr[retry] + DEFAULT_ARPA_LOC + loc + DEFAULT_ETCD_CAS + old
+		} else {
+			floc = "http://" + h.eaddr[retry] + DEFAULT_SKYDNS_LOC + loc + DEFAULT_ETCD_CAS + old
+		}
+		h.log.Debug("update url is %s", floc)
+		req, _ := http.NewRequest("PUT", floc , data)
+		req.Header.Set(CONTENT_HEADER, ETCD_CONTENT_HEADER)
+		client := &http.Client{
+			Timeout: time.Duration(DEFAULT_ETCD_TIMEOUT * time.Second),
+		}
+		resp, err = client.Do(req)
 	case READ:
 		if arpa {
 			floc = "http://" + h.eaddr[retry] + DEFAULT_ARPA_LOC + loc
@@ -89,8 +110,10 @@ next:
 			floc = "http://" + h.eaddr[retry] + DEFAULT_PURGE_SERVER_LOC
 		}
 		h.log.Debug("read url is %s", floc)
-		resp, err = http.Get(floc)
-		break
+		client := &http.Client{
+			Timeout: time.Duration(DEFAULT_ETCD_TIMEOUT * time.Second),
+		}
+		resp, err = client.Get(floc)
 	default: /* Should not reach here */
 		h.log.Error("Unknown operate code: ", op)
 		return nil, errors.InternalServerError
@@ -115,7 +138,7 @@ next:
 		return nil, errors.BadGatewayError
 	}
 
-	if op == ADD || op == DELETE {
+	if op == ADD || op == DELETE || op == UPDATE {
 		return nil, nil
 	}
 
@@ -151,15 +174,34 @@ func (h *Handler) Add(rec, addr string, ttl int, arpa, server bool) (*EtcdRespon
 
 	h.log.Info(args)
 
-	return h.Operate(rec, args, ADD, arpa, server, false)
+	//return h.Operate(rec, args, ADD, arpa, server, false)
+	return h.Operate(rec, args, "", ADD, arpa, server, false)
 }
 
 // Delete deletes record to etcd
 func (h *Handler) Delete(rec string, arpa, server bool) (*EtcdResponse, error) {
-	return h.Operate(rec, "", DELETE, arpa, server, false)
+	//return h.Operate(rec, "", DELETE, arpa, server, false)
+	return h.Operate(rec, "", "", DELETE, arpa, server, false)
 }
 
 // Read reads record from etcd
 func (h *Handler) Read(rec string, arpa, server, scan bool) (*EtcdResponse, error) {
-	return h.Operate(rec, "", READ, arpa, server, scan)
+	return h.Operate(rec, "", "", READ, arpa, server, scan)
+	//return h.Operate(rec, "", READ, arpa, server, scan)
+}
+
+// Update update record from etcd
+func (h *Handler) Update(rec, addr string, ttl int, old string, arpa bool) (*EtcdResponse, error) {
+	r := &RecValue{}
+	r.Host = addr
+	r.Ttl = ttl
+	b, err := json.Marshal(r)
+	if err != nil {
+		h.log.Error("Update marshal failed")
+		return nil, err
+	}
+	args := string(b)
+
+	h.log.Info(args)
+	return h.Operate(rec, args, old, UPDATE, arpa, false, false)
 }

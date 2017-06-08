@@ -42,6 +42,7 @@ func InitPurgeContext(h *Handler, cmd string, timeout time.Duration, log log.Log
 // DoPurge do purge, do not return any error
 func (pc *PurgeContext) DoPurge(name string) {
 	pc.log.Debug("Do purge")
+	time.Sleep(time.Second * 2)
 
 	ch := make(chan int, pc.lservers)
 

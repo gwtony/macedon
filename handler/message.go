@@ -8,6 +8,15 @@ type MacedonRequest struct {
 	Token   string
 }
 
+// MacedonUpdateRequest is Macedon request
+type MacedonUpdateRequest struct {
+    Name    string
+    Address string
+	Old     string
+    Ttl     int
+	Token   string
+}
+
 type MacedonResponseRecord struct {
     Name    string
     Address string
