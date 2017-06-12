@@ -33,9 +33,9 @@ Usage
 * -h help
 * -v version
 
-Schema
+API Reference
 =====
-* [schema infomation](SCHEMA.md)
+* [API REFERENCE](REFERENCE.md)
 
 Dependency
 ==========
